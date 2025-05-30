@@ -1,10 +1,11 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bell, User, Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -16,24 +17,28 @@ interface FormField {
   type: 'text' | 'number' | 'date' | 'textarea' | 'dropdown';
   value: string;
   options?: string[];
+  isMultiSelect?: boolean;
+  isRemovable?: boolean;
 }
 
 interface SubProgram {
   id: string;
   name: string;
   fields: FormField[];
+  isHighlighted?: boolean;
 }
 
 const AddProgramPage = () => {
   const activeTab = 'programs';
   const setActiveTab = () => {};
   const navigate = useNavigate();
+  const subProgramRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   
   const [programFields, setProgramFields] = useState<FormField[]>([
-    { id: '1', label: 'Program Name', type: 'text', value: '' },
-    { id: '2', label: 'Description', type: 'textarea', value: '' },
-    { id: '3', label: 'Start Date', type: 'date', value: '' },
-    { id: '4', label: 'End Date', type: 'date', value: '' },
+    { id: '1', label: 'Program Name', type: 'text', value: 'HDB - 25', isRemovable: false },
+    { id: '2', label: 'Description', type: 'textarea', value: '', isRemovable: false },
+    { id: '3', label: 'Start Date', type: 'date', value: '', isRemovable: false },
+    { id: '4', label: 'End Date', type: 'date', value: '', isRemovable: false },
   ]);
 
   const [subPrograms, setSubPrograms] = useState<SubProgram[]>([
@@ -41,8 +46,8 @@ const AddProgramPage = () => {
       id: '1',
       name: 'Sub-Program 1',
       fields: [
-        { id: 'sp1-1', label: 'Title', type: 'text', value: '' },
-        { id: 'sp1-2', label: 'Duration (weeks)', type: 'number', value: '' },
+        { id: 'sp1-1', label: 'Title', type: 'text', value: '', isRemovable: false },
+        { id: 'sp1-2', label: 'Duration (weeks)', type: 'number', value: '', isRemovable: false },
       ]
     }
   ]);
@@ -51,9 +56,27 @@ const AddProgramPage = () => {
   const [fieldTargetSection, setFieldTargetSection] = useState<'program' | string>('program');
   const [newFieldLabel, setNewFieldLabel] = useState('');
   const [newFieldType, setNewFieldType] = useState<FormField['type']>('text');
+  const [newFieldOptions, setNewFieldOptions] = useState<string[]>(['']);
+  const [newFieldIsMultiSelect, setNewFieldIsMultiSelect] = useState(false);
+
+  // Get program name for breadcrumb
+  const programName = programFields.find(field => field.label === 'Program Name')?.value || 'HDB - 25';
+
+  useEffect(() => {
+    // Clear highlight after 4 seconds
+    const timer = setTimeout(() => {
+      setSubPrograms(prev => prev.map(sp => ({ ...sp, isHighlighted: false })));
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [subPrograms]);
 
   const handleAddField = (section: 'program' | string) => {
     setFieldTargetSection(section);
+    setNewFieldLabel('');
+    setNewFieldType('text');
+    setNewFieldOptions(['']);
+    setNewFieldIsMultiSelect(false);
     setIsAddFieldDialogOpen(true);
   };
 
@@ -65,6 +88,11 @@ const AddProgramPage = () => {
       label: newFieldLabel,
       type: newFieldType,
       value: '',
+      isRemovable: true,
+      ...(newFieldType === 'dropdown' && {
+        options: newFieldOptions.filter(opt => opt.trim() !== ''),
+        isMultiSelect: newFieldIsMultiSelect,
+      }),
     };
 
     if (fieldTargetSection === 'program') {
@@ -77,8 +105,6 @@ const AddProgramPage = () => {
       ));
     }
 
-    setNewFieldLabel('');
-    setNewFieldType('text');
     setIsAddFieldDialogOpen(false);
   };
 
@@ -99,10 +125,20 @@ const AddProgramPage = () => {
       id: Date.now().toString(),
       name: `Sub-Program ${subPrograms.length + 1}`,
       fields: [
-        { id: `sp${Date.now()}-1`, label: 'Title', type: 'text', value: '' },
-      ]
+        { id: `sp${Date.now()}-1`, label: 'Title', type: 'text', value: '', isRemovable: false },
+      ],
+      isHighlighted: true,
     };
+    
     setSubPrograms(prev => [...prev, newSubProgram]);
+    
+    // Scroll to new subprogram after state update
+    setTimeout(() => {
+      const element = subProgramRefs.current[newSubProgram.id];
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
   const handleFieldValueChange = (fieldId: string, value: string, section: 'program' | string) => {
@@ -130,18 +166,34 @@ const AddProgramPage = () => {
     navigate('/choose-program');
   };
 
+  const addOption = () => {
+    setNewFieldOptions(prev => [...prev, '']);
+  };
+
+  const updateOption = (index: number, value: string) => {
+    setNewFieldOptions(prev => prev.map((opt, i) => i === index ? value : opt));
+  };
+
+  const removeOption = (index: number) => {
+    if (newFieldOptions.length > 1) {
+      setNewFieldOptions(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
   const renderField = (field: FormField, section: 'program' | string) => (
     <div key={field.id} className="space-y-2">
       <div className="flex items-center justify-between">
         <Label htmlFor={field.id}>{field.label}</Label>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleRemoveField(field.id, section)}
-          className="h-6 w-6 text-gray-400 hover:text-red-500"
-        >
-          <X size={14} />
-        </Button>
+        {field.isRemovable && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleRemoveField(field.id, section)}
+            className="h-6 w-6 text-gray-400 hover:text-red-500"
+          >
+            <X size={14} />
+          </Button>
+        )}
       </div>
       {field.type === 'textarea' ? (
         <Textarea
@@ -150,6 +202,22 @@ const AddProgramPage = () => {
           onChange={(e) => handleFieldValueChange(field.id, e.target.value, section)}
           placeholder={`Enter ${field.label.toLowerCase()}`}
         />
+      ) : field.type === 'dropdown' ? (
+        <Select 
+          value={field.value} 
+          onValueChange={(value) => handleFieldValueChange(field.id, value, section)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options?.map((option, index) => (
+              <SelectItem key={index} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       ) : (
         <Input
           id={field.id}
@@ -174,7 +242,7 @@ const AddProgramPage = () => {
       {/* Main content area */}
       <div className="flex-1 relative">
         {/* Fixed Header */}
-        <div className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl shadow-sm">
+        <div className="fixed top-0 left-20 right-0 z-10 bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl shadow-sm">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center">
               <img src="/lovable-uploads/af00c1ef-8d89-4eea-83f4-48c40d2bad90.png" alt="infinitheism" className="h-8" />
@@ -211,15 +279,15 @@ const AddProgramPage = () => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
                     <BreadcrumbLink href="/">Programs</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Add HDB/MSD Program</BreadcrumbPage>
+                    <BreadcrumbLink href="/choose-program">Add new program</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{programName}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
@@ -267,7 +335,15 @@ const AddProgramPage = () => {
 
                 <div className="space-y-8">
                   {subPrograms.map((subProgram) => (
-                    <div key={subProgram.id} className="border rounded-lg p-4">
+                    <div 
+                      key={subProgram.id} 
+                      ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
+                      className={`border rounded-lg p-4 transition-all duration-1000 ${
+                        subProgram.isHighlighted 
+                          ? 'border-blue-500 border-2 shadow-lg bg-blue-50' 
+                          : 'border-gray-200'
+                      }`}
+                    >
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-medium text-gray-700">{subProgram.name}</h3>
                         <Button
@@ -305,12 +381,12 @@ const AddProgramPage = () => {
 
       {/* Add Field Dialog */}
       <Dialog open={isAddFieldDialogOpen} onOpenChange={setIsAddFieldDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Add New Field</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
+          <div className="space-y-6">
+            <div className="space-y-2">
               <Label htmlFor="fieldLabel">Field Label</Label>
               <Input
                 id="fieldLabel"
@@ -319,22 +395,79 @@ const AddProgramPage = () => {
                 placeholder="Enter field label"
               />
             </div>
-            <div>
+            
+            <div className="space-y-2">
               <Label htmlFor="fieldType">Field Type</Label>
-              <select
-                id="fieldType"
-                value={newFieldType}
-                onChange={(e) => setNewFieldType(e.target.value as FormField['type'])}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              >
-                <option value="text">Text</option>
-                <option value="number">Number</option>
-                <option value="date">Date</option>
-                <option value="textarea">Textarea</option>
-                <option value="dropdown">Dropdown</option>
-              </select>
+              <Select value={newFieldType} onValueChange={(value) => setNewFieldType(value as FormField['type'])}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select field type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="text">Text</SelectItem>
+                  <SelectItem value="number">Number</SelectItem>
+                  <SelectItem value="date">Date</SelectItem>
+                  <SelectItem value="textarea">Textarea</SelectItem>
+                  <SelectItem value="dropdown">Dropdown</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex justify-end space-x-2">
+
+            {newFieldType === 'dropdown' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Dropdown Options</Label>
+                  <div className="space-y-2">
+                    {newFieldOptions.map((option, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Input
+                          value={option}
+                          onChange={(e) => updateOption(index, e.target.value)}
+                          placeholder={`Option ${index + 1}`}
+                          className="flex-1"
+                        />
+                        {newFieldOptions.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeOption(index)}
+                            className="h-10 w-10 text-gray-400 hover:text-red-500"
+                          >
+                            <X size={16} />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={addOption}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus size={14} />
+                    Add Option
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Selection Type</Label>
+                  <Select 
+                    value={newFieldIsMultiSelect ? 'multiple' : 'single'} 
+                    onValueChange={(value) => setNewFieldIsMultiSelect(value === 'multiple')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single">Single Select</SelectItem>
+                      <SelectItem value="multiple">Multiple Select</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setIsAddFieldDialogOpen(false)}>
                 Cancel
               </Button>
