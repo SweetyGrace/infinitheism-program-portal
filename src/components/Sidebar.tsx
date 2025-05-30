@@ -14,7 +14,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   ];
 
   return (
-    <div className="w-20 bg-gray-50 border-r border-gray-200 flex flex-col items-center py-6">
+    <div className="w-20 h-full bg-white shadow-lg border-r border-gray-200 flex flex-col items-center py-6">
       <div className="mb-8">
         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">i</span>
