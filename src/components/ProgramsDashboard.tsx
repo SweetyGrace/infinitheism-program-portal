@@ -6,7 +6,8 @@ import Sidebar from './Sidebar';
 import ProgramCard from './ProgramCard';
 
 const ProgramsDashboard = () => {
-  const [activeTab, setActiveTab] = useState('programs');
+  const activeTab = 'programs';
+  const setActiveTab = () => {};
 
   const programs = [
     {
@@ -48,11 +49,17 @@ const ProgramsDashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Sticky Sidebar with dedicated space */}
+      <div className="w-20 flex-shrink-0">
+        <div className="fixed left-0 top-0 h-full">
+          <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+      </div>
       
-      <div className="flex-1">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl">
+      {/* Main content area */}
+      <div className="flex-1 relative">
+        {/* Full width header that overlaps sidebar */}
+        <div className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center">
               <img 
@@ -79,8 +86,8 @@ const ProgramsDashboard = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="p-8">
+        {/* Main Content with top padding to account for fixed header */}
+        <div className="pt-20 p-8">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-xl text-gray-700 mb-2">
