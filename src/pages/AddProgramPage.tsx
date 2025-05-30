@@ -25,6 +25,7 @@ interface SubProgram {
   name: string;
   fields: FormField[];
   isHighlighted?: boolean;
+  highlightPhase?: 'fade-in' | 'visible' | 'fade-out';
 }
 
 const AddProgramPage = () => {
@@ -62,13 +63,51 @@ const AddProgramPage = () => {
   const programName = programFields.find(field => field.label === 'Program Name')?.value || 'HDB - 25';
 
   useEffect(() => {
-    // Clear highlight after 800ms (leaving 400ms for scroll)
-    const timer = setTimeout(() => {
-      setSubPrograms(prev => prev.map(sp => ({ ...sp, isHighlighted: false })));
-    }, 800);
+    // Handle highlight phases with fade effects
+    const highlightedSubProgram = subPrograms.find(sp => sp.isHighlighted);
+    
+    if (highlightedSubProgram) {
+      // Start with fade-in
+      setSubPrograms(prev => prev.map(sp => 
+        sp.id === highlightedSubProgram.id 
+          ? { ...sp, highlightPhase: 'fade-in' } 
+          : sp
+      ));
 
-    return () => clearTimeout(timer);
-  }, [subPrograms]);
+      // Transition to visible after 200ms
+      const visibleTimer = setTimeout(() => {
+        setSubPrograms(prev => prev.map(sp => 
+          sp.id === highlightedSubProgram.id 
+            ? { ...sp, highlightPhase: 'visible' } 
+            : sp
+        ));
+      }, 200);
+
+      // Start fade-out after 800ms
+      const fadeOutTimer = setTimeout(() => {
+        setSubPrograms(prev => prev.map(sp => 
+          sp.id === highlightedSubProgram.id 
+            ? { ...sp, highlightPhase: 'fade-out' } 
+            : sp
+        ));
+      }, 800);
+
+      // Complete fade-out and remove highlight after 1200ms total
+      const completeTimer = setTimeout(() => {
+        setSubPrograms(prev => prev.map(sp => 
+          sp.id === highlightedSubProgram.id 
+            ? { ...sp, isHighlighted: false, highlightPhase: undefined } 
+            : sp
+        ));
+      }, 1200);
+
+      return () => {
+        clearTimeout(visibleTimer);
+        clearTimeout(fadeOutTimer);
+        clearTimeout(completeTimer);
+      };
+    }
+  }, [subPrograms.some(sp => sp.isHighlighted)]);
 
   const handleAddField = (section: 'program' | string) => {
     setFieldTargetSection(section);
@@ -229,6 +268,23 @@ const AddProgramPage = () => {
     </div>
   );
 
+  const getHighlightClasses = (subProgram: SubProgram) => {
+    if (!subProgram.isHighlighted) {
+      return 'border-gray-200';
+    }
+
+    switch (subProgram.highlightPhase) {
+      case 'fade-in':
+        return 'border-blue-500 border-2 shadow-lg bg-blue-50 opacity-0 animate-fade-in';
+      case 'visible':
+        return 'border-blue-500 border-2 shadow-lg bg-blue-50 opacity-100';
+      case 'fade-out':
+        return 'border-blue-500 border-2 shadow-lg bg-blue-50 opacity-100 animate-fade-out';
+      default:
+        return 'border-blue-500 border-2 shadow-lg bg-blue-50';
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sticky Sidebar */}
@@ -337,11 +393,7 @@ const AddProgramPage = () => {
                     <div 
                       key={subProgram.id} 
                       ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
-                      className={`border rounded-lg p-4 transition-all duration-300 ease-in-out ${
-                        subProgram.isHighlighted 
-                          ? 'border-blue-500 border-2 shadow-lg bg-blue-50' 
-                          : 'border-gray-200'
-                      }`}
+                      className={`border rounded-lg p-4 transition-all duration-300 ease-in-out ${getHighlightClasses(subProgram)}`}
                     >
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-medium text-gray-700">{subProgram.name}</h3>
