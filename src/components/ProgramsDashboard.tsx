@@ -3,41 +3,46 @@ import { Button } from '@/components/ui/button';
 import { Bell, User } from 'lucide-react';
 import Sidebar from './Sidebar';
 import ProgramCard from './ProgramCard';
+
 const ProgramsDashboard = () => {
   const activeTab = 'programs';
   const setActiveTab = () => {};
-  const programs = [{
-    id: 1,
-    title: 'HDB - 24',
-    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-    dateRange: '07th May\'25 - 14th Nov\'25',
-    status: 'On Going' as const
-  }, {
-    id: 2,
-    title: 'Entrainment',
-    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-    dateRange: '07th May\'25 - 14th Nov\'25',
-    status: 'On Going' as const
-  }, {
-    id: 3,
-    title: 'HDB - 24',
-    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-    dateRange: '07th May\'25 - 14th Nov\'25',
-    status: 'On Going' as const
-  }, {
-    id: 4,
-    title: 'HDB - 24',
-    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-    dateRange: '07th May\'25 - 14th Nov\'25',
-    status: 'Yet to start' as const
-  }, {
-    id: 5,
-    title: 'HDB - 24',
-    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-    dateRange: '07th May\'25 - 14th Nov\'25',
-    status: 'Yet to start' as const
-  }];
-  return <div className="flex min-h-screen bg-gray-50">
+  const programs = [
+    {
+      id: 1,
+      title: 'HDB - 24',
+      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+      dateRange: '07th May\'25 - 14th Nov\'25',
+      status: 'On Going' as const
+    }, {
+      id: 2,
+      title: 'Entrainment',
+      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+      dateRange: '07th May\'25 - 14th Nov\'25',
+      status: 'On Going' as const
+    }, {
+      id: 3,
+      title: 'HDB - 24',
+      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+      dateRange: '07th May\'25 - 14th Nov\'25',
+      status: 'On Going' as const
+    }, {
+      id: 4,
+      title: 'HDB - 24',
+      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+      dateRange: '07th May\'25 - 14th Nov\'25',
+      status: 'Yet to start' as const
+    }, {
+      id: 5,
+      title: 'HDB - 24',
+      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+      dateRange: '07th May\'25 - 14th Nov\'25',
+      status: 'Yet to start' as const
+    }
+  ];
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sticky Sidebar with dedicated space */}
       <div className="w-20 flex-shrink-0">
         <div className="fixed left-0 top-0 h-full">
@@ -71,8 +76,8 @@ const ProgramsDashboard = () => {
           </div>
         </div>
 
-        {/* Main Content with top padding to account for fixed header */}
-        <div className="pt-[30px] p-5 px-[32px] py-[110px]">
+        {/* Main Content with sufficient top padding to account for fixed header */}
+        <div className="pt-24 p-5 px-8 py-5">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-xl text-gray-700 mb-2">
@@ -86,7 +91,15 @@ const ProgramsDashboard = () => {
 
           {/* Programs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {programs.map(program => <ProgramCard key={program.id} title={program.title} description={program.description} dateRange={program.dateRange} status={program.status} />)}
+            {programs.map(program => (
+              <ProgramCard
+                key={program.id}
+                title={program.title}
+                description={program.description}
+                dateRange={program.dateRange}
+                status={program.status}
+              />
+            ))}
           </div>
 
           {/* Bottom Message */}
@@ -100,6 +113,8 @@ const ProgramsDashboard = () => {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ProgramsDashboard;
