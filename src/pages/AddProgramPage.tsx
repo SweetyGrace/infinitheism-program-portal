@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -230,6 +231,33 @@ const AddProgramPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!title.trim()) {
+      alert('Program title is required');
+      return;
+    }
+
+    // Validate sub-programs
+    for (const subProgram of subPrograms) {
+      if (!subProgram.title.trim()) {
+        alert(`Sub-program title is required for ${subProgram.id}`);
+        return;
+      }
+      if (!subProgram.fee.trim()) {
+        alert(`Fee is required for ${subProgram.title}`);
+        return;
+      }
+      if (!subProgram.paymentMethod.trim()) {
+        alert(`Payment method is required for ${subProgram.title}`);
+        return;
+      }
+      if (!subProgram.dateRange?.from || !subProgram.dateRange?.to) {
+        alert(`Date range is required for ${subProgram.title}`);
+        return;
+      }
+    }
+
     console.log('Program Data:', {
       title,
       description,
@@ -274,7 +302,9 @@ const AddProgramPage = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Program Title</Label>
+                <Label htmlFor="title">
+                  Program Title <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="title"
                   value={title}
@@ -377,6 +407,18 @@ const AddProgramPage = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                      <Label>
+                        Sub-Program Title <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        value={subProgram.title}
+                        onChange={(e) => updateSubProgram(subProgram.id, { title: e.target.value })}
+                        placeholder="Sub-program title"
+                        required
+                      />
+                    </div>
+
+                    <div>
                       <Label>Banner Image URL</Label>
                       <Input
                         value={subProgram.banner}
@@ -386,12 +428,15 @@ const AddProgramPage = () => {
                     </div>
 
                     <div>
-                      <Label>Mode</Label>
+                      <Label>
+                        Mode <span className="text-red-500">*</span>
+                      </Label>
                       <Select
                         value={subProgram.mode}
                         onValueChange={(value: 'online' | 'offline' | 'hybrid') => 
                           updateSubProgram(subProgram.id, { mode: value })
                         }
+                        required
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -405,20 +450,26 @@ const AddProgramPage = () => {
                     </div>
 
                     <div>
-                      <Label>Fee</Label>
+                      <Label>
+                        Fee <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         value={subProgram.fee}
                         onChange={(e) => updateSubProgram(subProgram.id, { fee: e.target.value })}
                         placeholder="Enter fee"
+                        required
                       />
                     </div>
 
                     <div>
-                      <Label>Payment Method</Label>
+                      <Label>
+                        Payment Method <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         value={subProgram.paymentMethod}
                         onChange={(e) => updateSubProgram(subProgram.id, { paymentMethod: e.target.value })}
                         placeholder="Enter payment method"
+                        required
                       />
                     </div>
                   </div>
@@ -434,7 +485,9 @@ const AddProgramPage = () => {
                   </div>
 
                   <div>
-                    <Label>Date Range</Label>
+                    <Label>
+                      Date Range <span className="text-red-500">*</span>
+                    </Label>
                     <DatePickerWithRange
                       date={subProgram.dateRange}
                       onDateChange={(dateRange) => updateSubProgram(subProgram.id, { dateRange })}
