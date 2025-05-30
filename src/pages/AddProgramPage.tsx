@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Bell, User, Plus, X, CalendarIcon, Upload } from 'lucide-react';
+import { Bell, User, Plus, X, CalendarIcon, Upload, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import Sidebar from '../components/Sidebar';
@@ -107,6 +107,8 @@ const AddProgramPage = () => {
 
   const [showCustomVenue, setShowCustomVenue] = useState(false);
   const [uploadedBanner, setUploadedBanner] = useState<File | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [subProgramToDelete, setSubProgramToDelete] = useState<string | null>(null);
   
   // Watch form values for conditional rendering
   const modeOfProgram = form.watch('modeOfProgram');
@@ -299,6 +301,19 @@ const AddProgramPage = () => {
     }, 50);
   };
 
+  const handleDeleteSubProgram = (subProgramId: string) => {
+    setSubProgramToDelete(subProgramId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteSubProgram = () => {
+    if (subProgramToDelete) {
+      setSubPrograms(prev => prev.filter(sp => sp.id !== subProgramToDelete));
+      setDeleteDialogOpen(false);
+      setSubProgramToDelete(null);
+    }
+  };
+
   const handleSubProgramChange = (subProgramId: string, field: keyof SubProgram, value: any) => {
     setSubPrograms(prev => prev.map(sp => 
       sp.id === subProgramId ? { ...sp, [field]: value } : sp
@@ -440,7 +455,7 @@ const AddProgramPage = () => {
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSave)} className="space-y-12">
-                {/* Program Details Section - Keep existing code */}
+                {/* Program Details Section */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="text-xl font-semibold text-gray-800">Program Details</h2>
@@ -975,13 +990,13 @@ const AddProgramPage = () => {
                   </div>
                 </div>
 
-                {/* Personalized Welcome Message for Sub-Programs */}
+                {/* Sub-Program Configuration Section */}
                 <div className="text-center py-8">
                   <div className="max-w-2xl mx-auto">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Great progress! 🎉</h2>
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Sub-Program Configuration</h2>
                     <p className="text-lg text-gray-600 leading-relaxed">
-                      Now let's set up your sub-programs to create a structured learning journey for your participants. 
-                      Each sub-program can have its own schedule, format, and requirements while staying within your main program framework.
+                      Configure individual sub-programs with their specific schedules, delivery modes, and requirements. 
+                      Each sub-program inherits settings from the main program but can be customized as needed.
                     </p>
                   </div>
                 </div>
@@ -1010,6 +1025,16 @@ const AddProgramPage = () => {
                       >
                         <div className="flex items-center justify-between mb-8">
                           <h3 className="text-lg font-semibold text-gray-700">{subProgram.title}</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteSubProgram(subProgram.id)}
+                            className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </Button>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1059,34 +1084,13 @@ const AddProgramPage = () => {
                           {/* Sub-Program Start Date */}
                           <div className="flex flex-col space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Sub-program start date</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
-                                    !subProgram.startDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  {subProgram.startDate ? (
-                                    format(subProgram.startDate, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={subProgram.startDate || undefined}
-                                  onSelect={(date) => handleSubProgramChange(subProgram.id, 'startDate', date)}
-                                  disabled={(date) => !isDateWithinProgramRange(date)}
-                                  initialFocus
-                                  className="pointer-events-auto"
-                                />
-                              </PopoverContent>
-                            </Popover>
+                            <Calendar
+                              mode="single"
+                              selected={subProgram.startDate || undefined}
+                              onSelect={(date) => handleSubProgramChange(subProgram.id, 'startDate', date)}
+                              disabled={(date) => !isDateWithinProgramRange(date)}
+                              className="border rounded-md p-3 bg-white shadow-sm"
+                            />
                             {startDate && endDate && (
                               <p className="text-xs text-gray-500">Must be between {format(startDate, "PPP")} and {format(endDate, "PPP")}</p>
                             )}
@@ -1095,37 +1099,16 @@ const AddProgramPage = () => {
                           {/* Sub-Program End Date */}
                           <div className="flex flex-col space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Sub-program end date</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
-                                    !subProgram.endDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  {subProgram.endDate ? (
-                                    format(subProgram.endDate, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={subProgram.endDate || undefined}
-                                  onSelect={(date) => handleSubProgramChange(subProgram.id, 'endDate', date)}
-                                  disabled={(date) => 
-                                    !isDateWithinProgramRange(date) || 
-                                    (subProgram.startDate && date < subProgram.startDate)
-                                  }
-                                  initialFocus
-                                  className="pointer-events-auto"
-                                />
-                              </PopoverContent>
-                            </Popover>
+                            <Calendar
+                              mode="single"
+                              selected={subProgram.endDate || undefined}
+                              onSelect={(date) => handleSubProgramChange(subProgram.id, 'endDate', date)}
+                              disabled={(date) => 
+                                !isDateWithinProgramRange(date) || 
+                                (subProgram.startDate && date < subProgram.startDate)
+                              }
+                              className="border rounded-md p-3 bg-white shadow-sm"
+                            />
                           </div>
 
                           {/* Mode of Sub-Program */}
@@ -1323,6 +1306,26 @@ const AddProgramPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Sub-Program</DialogTitle>
+          </DialogHeader>
+          <div className="py-3">
+            <p>Are you sure you want to delete this sub-program? This action cannot be undone.</p>
+          </div>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteSubProgram}>
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
