@@ -13,6 +13,13 @@ const ChooseProgramPage = () => {
     navigate('/');
   };
 
+  const handleProgramClick = (programId: string) => {
+    if (programId === 'hdb') {
+      navigate('/add-program/hdb');
+    }
+    // Add other program navigation logic here
+  };
+
   const programTypes = [
     {
       id: 'hdb',
@@ -94,6 +101,7 @@ const ChooseProgramPage = () => {
               {programTypes.map((program) => (
                 <div 
                   key={program.id}
+                  onClick={() => handleProgramClick(program.id)}
                   className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
                 >
                   <div className={`${program.bgColor} rounded-t-xl h-48 flex items-center justify-center relative overflow-hidden`}>
