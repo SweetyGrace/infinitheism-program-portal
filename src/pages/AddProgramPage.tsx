@@ -851,11 +851,11 @@ const AddProgramPage = () => {
                             >
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="yes" id="approval-yes" className="border-gray-300 text-blue-600" />
-                                <Label htmlFor="approval-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes, I'll approve each registration</Label>
+                                <Label htmlFor="approval-yes" className="text-sm font-medium text-gray-700 cursor-pointer">I'll approve each registration</Label>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="no" id="approval-no" className="border-gray-300 text-blue-600" />
-                                <Label htmlFor="approval-no" className="text-sm font-medium text-gray-700 cursor-pointer">No, auto-approve registrations</Label>
+                                <Label htmlFor="approval-no" className="text-sm font-medium text-gray-700 cursor-pointer">Auto-approve registrations</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
