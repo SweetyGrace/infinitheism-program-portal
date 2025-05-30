@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,10 +62,10 @@ const AddProgramPage = () => {
   const programName = programFields.find(field => field.label === 'Program Name')?.value || 'HDB - 25';
 
   useEffect(() => {
-    // Clear highlight after 4 seconds
+    // Clear highlight after 1.5 seconds
     const timer = setTimeout(() => {
       setSubPrograms(prev => prev.map(sp => ({ ...sp, isHighlighted: false })));
-    }, 4000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [subPrograms]);
@@ -338,7 +337,7 @@ const AddProgramPage = () => {
                     <div 
                       key={subProgram.id} 
                       ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
-                      className={`border rounded-lg p-4 transition-all duration-1000 ${
+                      className={`border rounded-lg p-4 transition-all duration-500 ease-in-out ${
                         subProgram.isHighlighted 
                           ? 'border-blue-500 border-2 shadow-lg bg-blue-50' 
                           : 'border-gray-200'
