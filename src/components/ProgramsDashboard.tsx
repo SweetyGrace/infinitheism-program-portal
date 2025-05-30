@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ProgramCard from './ProgramCard';
 
 const ProgramsDashboard = () => {
   const activeTab = 'programs';
   const setActiveTab = () => {};
+  const navigate = useNavigate();
+  
   const programs = [
     {
       id: 1,
@@ -40,6 +43,10 @@ const ProgramsDashboard = () => {
       status: 'Yet to start' as const
     }
   ];
+
+  const handleAddProgram = () => {
+    navigate('/choose-program');
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -84,7 +91,10 @@ const ProgramsDashboard = () => {
                 Hi Sam, Here's a quick overview of your created programs.
               </h2>
             </div>
-            <Button className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-full px-6">
+            <Button 
+              onClick={handleAddProgram}
+              className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-full px-6"
+            >
               Add Program
             </Button>
           </div>
@@ -107,7 +117,10 @@ const ProgramsDashboard = () => {
             <p className="text-gray-600 inline-block mr-2">
               Each program is a seed of change. Plant a new one today
             </p>
-            <button className="text-blue-600 hover:text-blue-700 font-medium inline-block">
+            <button 
+              onClick={handleAddProgram}
+              className="text-blue-600 hover:text-blue-700 font-medium inline-block"
+            >
               Add New Program
             </button>
           </div>
