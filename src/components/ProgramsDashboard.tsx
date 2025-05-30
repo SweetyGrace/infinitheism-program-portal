@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, User } from 'lucide-react';
@@ -52,7 +51,7 @@ const ProgramsDashboard = () => {
       
       <div className="flex-1">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center">
               <h1 className="text-2xl font-light text-gray-700">infinitheism</h1>
