@@ -836,19 +836,19 @@ const AddProgramPage = () => {
                       )}
                     />
 
-                    {/* Participants Limit Section - Grouped */}
-                    <div className="md:col-span-2 bg-gray-50 rounded-lg p-6 border border-gray-100">
-                      <FormField
-                        control={form.control}
-                        name="hasSeatLimit"
-                        render={({ field }) => (
-                          <FormItem className="mb-6">
-                            <FormLabel className="text-sm font-medium text-gray-700">Is there a limit on participants?</FormLabel>
+                    {/* Participants Limit Section - Inline Layout */}
+                    <FormField
+                      control={form.control}
+                      name="hasSeatLimit"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Is there a limit on participants?</FormLabel>
+                          <div className="flex flex-col md:flex-row md:items-end gap-4 mt-2">
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
-                                className="flex flex-row space-x-8 mt-2"
+                                className="flex flex-row space-x-8"
                               >
                                 <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="yes" id="limit-yes" className="border-gray-300 text-blue-600" />
@@ -860,55 +860,57 @@ const AddProgramPage = () => {
                                 </div>
                               </RadioGroup>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
-                      {/* Seat Limit Number - Conditional */}
-                      <div className={cn(
-                        "overflow-hidden transition-all duration-300 ease-in-out",
-                        hasSeatLimit === 'yes' 
-                          ? "max-h-24 opacity-100 transform translate-y-0" 
-                          : "max-h-0 opacity-0 transform -translate-y-2"
-                      )}>
-                        {hasSeatLimit === 'yes' && (
-                          <FormField
-                            control={form.control}
-                            name="seatLimit"
-                            render={({ field }) => (
-                              <FormItem className="max-w-sm">
-                                <FormLabel className="text-sm font-medium text-gray-700">How many participants can join?</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    type="number" 
-                                    placeholder="Enter number of seats"
-                                    min="1"
-                                    className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-                      </div>
-                    </div>
+                            {/* Seat Limit Number - Conditional Inline */}
+                            <div className={cn(
+                              "overflow-hidden transition-all duration-300 ease-in-out",
+                              hasSeatLimit === 'yes' 
+                                ? "max-w-xs opacity-100 transform translate-x-0" 
+                                : "max-w-0 opacity-0 transform -translate-x-4"
+                            )}>
+                              {hasSeatLimit === 'yes' && (
+                                <FormField
+                                  control={form.control}
+                                  name="seatLimit"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <div className="flex flex-col space-y-1">
+                                          <Label className="text-xs text-gray-600">Number of seats</Label>
+                                          <Input 
+                                            type="number" 
+                                            placeholder="Enter seats"
+                                            min="1"
+                                            className="h-10 w-32 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                            {...field} 
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
+                            </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    {/* Waitlist Section - Grouped */}
-                    <div className="md:col-span-2 bg-gray-50 rounded-lg p-6 border border-gray-100">
-                      <FormField
-                        control={form.control}
-                        name="hasWaitlist"
-                        render={({ field }) => (
-                          <FormItem className="mb-6">
-                            <FormLabel className="text-sm font-medium text-gray-700">Enable waitlist when full?</FormLabel>
+                    {/* Waitlist Section - Inline Layout */}
+                    <FormField
+                      control={form.control}
+                      name="hasWaitlist"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Enable waitlist when full?</FormLabel>
+                          <div className="flex flex-col md:flex-row md:items-end gap-4 mt-2">
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
-                                className="flex flex-row space-x-8 mt-2"
+                                className="flex flex-row space-x-8"
                               >
                                 <div className="flex items-center space-x-2">
                                   <RadioGroupItem value="yes" id="waitlist-yes" className="border-gray-300 text-blue-600" />
@@ -920,41 +922,43 @@ const AddProgramPage = () => {
                                 </div>
                               </RadioGroup>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
-                      {/* Waitlist Trigger Count - Conditional */}
-                      <div className={cn(
-                        "overflow-hidden transition-all duration-300 ease-in-out",
-                        hasWaitlist === 'yes' 
-                          ? "max-h-24 opacity-100 transform translate-y-0" 
-                          : "max-h-0 opacity-0 transform -translate-y-2"
-                      )}>
-                        {hasWaitlist === 'yes' && (
-                          <FormField
-                            control={form.control}
-                            name="waitlistTriggerCount"
-                            render={({ field }) => (
-                              <FormItem className="max-w-sm">
-                                <FormLabel className="text-sm font-medium text-gray-700">Waitlist trigger count</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    type="number" 
-                                    placeholder="When to start waitlist"
-                                    min="1"
-                                    className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-                      </div>
-                    </div>
+                            {/* Waitlist Trigger Count - Conditional Inline */}
+                            <div className={cn(
+                              "overflow-hidden transition-all duration-300 ease-in-out",
+                              hasWaitlist === 'yes' 
+                                ? "max-w-xs opacity-100 transform translate-x-0" 
+                                : "max-w-0 opacity-0 transform -translate-x-4"
+                            )}>
+                              {hasWaitlist === 'yes' && (
+                                <FormField
+                                  control={form.control}
+                                  name="waitlistTriggerCount"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <div className="flex flex-col space-y-1">
+                                          <Label className="text-xs text-gray-600">Trigger count</Label>
+                                          <Input 
+                                            type="number" 
+                                            placeholder="Count"
+                                            min="1"
+                                            className="h-10 w-32 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                            {...field} 
+                                          />
+                                        </div>
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
+                            </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     {/* Approval Required - Moved to bottom */}
                     <FormField
