@@ -62,10 +62,10 @@ const AddProgramPage = () => {
   const programName = programFields.find(field => field.label === 'Program Name')?.value || 'HDB - 25';
 
   useEffect(() => {
-    // Clear highlight after 1.5 seconds
+    // Clear highlight after 800ms (leaving 400ms for scroll)
     const timer = setTimeout(() => {
       setSubPrograms(prev => prev.map(sp => ({ ...sp, isHighlighted: false })));
-    }, 1500);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [subPrograms]);
@@ -131,13 +131,13 @@ const AddProgramPage = () => {
     
     setSubPrograms(prev => [...prev, newSubProgram]);
     
-    // Scroll to new subprogram after state update
+    // Scroll to new subprogram with faster timing
     setTimeout(() => {
       const element = subProgramRefs.current[newSubProgram.id];
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 100);
+    }, 50);
   };
 
   const handleFieldValueChange = (fieldId: string, value: string, section: 'program' | string) => {
@@ -337,7 +337,7 @@ const AddProgramPage = () => {
                     <div 
                       key={subProgram.id} 
                       ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
-                      className={`border rounded-lg p-4 transition-all duration-500 ease-in-out ${
+                      className={`border rounded-lg p-4 transition-all duration-300 ease-in-out ${
                         subProgram.isHighlighted 
                           ? 'border-blue-500 border-2 shadow-lg bg-blue-50' 
                           : 'border-gray-200'
