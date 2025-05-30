@@ -1,12 +1,17 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bell, User, Sparkles, Edit } from 'lucide-react';
+import { Bell, User, Sparkles, Edit, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 
 const ChooseProgramPage = () => {
   const activeTab = 'programs';
   const setActiveTab = () => {};
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    navigate('/');
+  };
 
   const programTypes = [
     {
@@ -70,9 +75,19 @@ const ChooseProgramPage = () => {
         {/* Main Content with sufficient top padding to account for fixed header */}
         <div className="pt-24 p-8">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-2xl text-gray-700 mb-12">
-              Choose the foundation of spiritual program
-            </h1>
+            <div className="flex items-center mb-12">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleBackClick}
+                className="mr-4 hover:bg-gray-100"
+              >
+                <ArrowLeft size={20} className="text-gray-600" />
+              </Button>
+              <h1 className="text-2xl text-gray-700">
+                Choose the foundation of spiritual program
+              </h1>
+            </div>
 
             {/* Program Types Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
