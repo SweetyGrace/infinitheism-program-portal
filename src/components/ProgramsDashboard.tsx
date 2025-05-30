@@ -54,21 +54,22 @@ const ProgramsDashboard = () => {
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="flex items-center justify-between px-8 py-4">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-semibold text-blue-600">infinitheism</h1>
-              <div className="flex space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              </div>
+            <div className="flex items-center">
+              <h1 className="text-2xl font-light text-gray-700">infinitheism</h1>
+            </div>
+            
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
             </div>
             
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon">
                 <Bell size={20} className="text-gray-600" />
               </Button>
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                <User size={20} className="text-gray-600" />
+              <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                <User size={20} className="text-white" />
               </div>
             </div>
           </div>
