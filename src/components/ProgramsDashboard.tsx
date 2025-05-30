@@ -1,54 +1,43 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, User } from 'lucide-react';
 import Sidebar from './Sidebar';
 import ProgramCard from './ProgramCard';
-
 const ProgramsDashboard = () => {
   const activeTab = 'programs';
   const setActiveTab = () => {};
-
-  const programs = [
-    {
-      id: 1,
-      title: 'HDB - 24',
-      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-      dateRange: '07th May\'25 - 14th Nov\'25',
-      status: 'On Going' as const
-    },
-    {
-      id: 2,
-      title: 'Entrainment',
-      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-      dateRange: '07th May\'25 - 14th Nov\'25',
-      status: 'On Going' as const
-    },
-    {
-      id: 3,
-      title: 'HDB - 24',
-      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-      dateRange: '07th May\'25 - 14th Nov\'25',
-      status: 'On Going' as const
-    },
-    {
-      id: 4,
-      title: 'HDB - 24',
-      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-      dateRange: '07th May\'25 - 14th Nov\'25',
-      status: 'Yet to start' as const
-    },
-    {
-      id: 5,
-      title: 'HDB - 24',
-      description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
-      dateRange: '07th May\'25 - 14th Nov\'25',
-      status: 'Yet to start' as const
-    }
-  ];
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
+  const programs = [{
+    id: 1,
+    title: 'HDB - 24',
+    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+    dateRange: '07th May\'25 - 14th Nov\'25',
+    status: 'On Going' as const
+  }, {
+    id: 2,
+    title: 'Entrainment',
+    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+    dateRange: '07th May\'25 - 14th Nov\'25',
+    status: 'On Going' as const
+  }, {
+    id: 3,
+    title: 'HDB - 24',
+    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+    dateRange: '07th May\'25 - 14th Nov\'25',
+    status: 'On Going' as const
+  }, {
+    id: 4,
+    title: 'HDB - 24',
+    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+    dateRange: '07th May\'25 - 14th Nov\'25',
+    status: 'Yet to start' as const
+  }, {
+    id: 5,
+    title: 'HDB - 24',
+    description: 'Holistic Development Blueprint - Comprehensive personal growth programs',
+    dateRange: '07th May\'25 - 14th Nov\'25',
+    status: 'Yet to start' as const
+  }];
+  return <div className="flex min-h-screen bg-gray-50">
       {/* Sticky Sidebar with dedicated space */}
       <div className="w-20 flex-shrink-0">
         <div className="fixed left-0 top-0 h-full">
@@ -62,11 +51,7 @@ const ProgramsDashboard = () => {
         <div className="fixed top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 rounded-bl-3xl rounded-br-3xl shadow-sm">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/af00c1ef-8d89-4eea-83f4-48c40d2bad90.png" 
-                alt="infinitheism" 
-                className="h-8"
-              />
+              <img src="/lovable-uploads/af00c1ef-8d89-4eea-83f4-48c40d2bad90.png" alt="infinitheism" className="h-8" />
             </div>
             
             <div className="flex items-center space-x-1">
@@ -87,7 +72,7 @@ const ProgramsDashboard = () => {
         </div>
 
         {/* Main Content with top padding to account for fixed header */}
-        <div className="pt-[30px] p-5">
+        <div className="pt-[30px] p-5 px-[32px] py-[110px]">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-xl text-gray-700 mb-2">
@@ -101,15 +86,7 @@ const ProgramsDashboard = () => {
 
           {/* Programs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {programs.map((program) => (
-              <ProgramCard
-                key={program.id}
-                title={program.title}
-                description={program.description}
-                dateRange={program.dateRange}
-                status={program.status}
-              />
-            ))}
+            {programs.map(program => <ProgramCard key={program.id} title={program.title} description={program.description} dateRange={program.dateRange} status={program.status} />)}
           </div>
 
           {/* Bottom Message */}
@@ -123,8 +100,6 @@ const ProgramsDashboard = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ProgramsDashboard;
