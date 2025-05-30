@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, User } from 'lucide-react';
@@ -87,7 +86,7 @@ const ProgramsDashboard = () => {
         </div>
 
         {/* Main Content with top padding to account for fixed header */}
-        <div className="pt-20 p-8">
+        <div className="pt-20 p-5">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-xl text-gray-700 mb-2">
