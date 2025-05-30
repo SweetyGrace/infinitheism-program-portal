@@ -20,6 +20,22 @@ import Sidebar from '../components/Sidebar';
 import { cn } from '@/lib/utils';
 
 // Form schema for validation
+const subProgramSchema = z.object({
+  title: z.string().min(1, "Sub-program title is required"),
+  banner: z.any().optional(),
+  description: z.string().min(10, "Description should be at least 10 characters"),
+  startDate: z.date({ required_error: "Start date is required" }),
+  endDate: z.date({ required_error: "End date is required" }),
+  modeOfProgram: z.enum(['online', 'offline', 'hybrid'], { required_error: "Please select a mode" }),
+  venueAddress: z.array(z.string()).optional(),
+  customVenue: z.string().optional(),
+  isTravelRequired: z.enum(['yes', 'no']).optional(),
+  isResidential: z.enum(['yes', 'no']).optional(),
+  isPaymentRequired: z.enum(['yes', 'no']),
+  currency: z.string().optional(),
+  programFee: z.string().optional(),
+});
+
 const programDetailsSchema = z.object({
   programName: z.string().min(1, "Program name is required"),
   programBanner: z.any().optional(),
@@ -43,24 +59,27 @@ const programDetailsSchema = z.object({
   seatLimit: z.string().optional(),
   hasWaitlist: z.enum(['yes', 'no']),
   waitlistTriggerCount: z.string().optional(),
+  subPrograms: z.array(subProgramSchema),
 });
-
-interface FormField {
-  id: string;
-  label: string;
-  type: 'text' | 'number' | 'date' | 'textarea' | 'dropdown';
-  value: string;
-  options?: string[];
-  isMultiSelect?: boolean;
-  isRemovable?: boolean;
-}
 
 interface SubProgram {
   id: string;
-  name: string;
-  fields: FormField[];
+  title: string;
+  banner?: File | null;
+  description: string;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  modeOfProgram: 'online' | 'offline' | 'hybrid';
+  venueAddress: string[];
+  customVenue: string;
+  isTravelRequired?: 'yes' | 'no';
+  isResidential?: 'yes' | 'no';
+  isPaymentRequired: 'yes' | 'no';
+  currency: string;
+  programFee: string;
   isHighlighted?: boolean;
   highlightPhase?: 'fade-in' | 'visible' | 'fade-out';
+  showCustomVenue?: boolean;
 }
 
 const AddProgramPage = () => {
@@ -82,6 +101,7 @@ const AddProgramPage = () => {
       hasSeatLimit: 'no',
       hasWaitlist: 'no',
       venueAddress: [],
+      subPrograms: [],
     },
   });
 
@@ -94,7 +114,9 @@ const AddProgramPage = () => {
   const hasSeatLimit = form.watch('hasSeatLimit');
   const hasWaitlist = form.watch('hasWaitlist');
   const startDate = form.watch('startDate');
+  const endDate = form.watch('endDate');
   const selectedCurrency = form.watch('currency');
+  const programDescription = form.watch('description');
 
   // Auto-calculate end date when start date changes
   useEffect(() => {
@@ -104,23 +126,69 @@ const AddProgramPage = () => {
     }
   }, [startDate, form]);
 
+  // Initialize default sub-programs
   const [subPrograms, setSubPrograms] = useState<SubProgram[]>([
     {
       id: '1',
-      name: 'Sub-Program 1',
-      fields: [
-        { id: 'sp1-1', label: 'Title', type: 'text', value: '', isRemovable: false },
-        { id: 'sp1-2', label: 'Duration (weeks)', type: 'number', value: '', isRemovable: false },
-      ]
+      title: 'HDB 1',
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      showCustomVenue: false,
+    },
+    {
+      id: '2',
+      title: 'HDB 2',
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      showCustomVenue: false,
+    },
+    {
+      id: '3',
+      title: 'HDB 3',
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      showCustomVenue: false,
+    },
+    {
+      id: '4',
+      title: 'MSD 1',
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      showCustomVenue: false,
+    },
+    {
+      id: '5',
+      title: 'MSD 2',
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      showCustomVenue: false,
     }
   ]);
-
-  const [isAddFieldDialogOpen, setIsAddFieldDialogOpen] = useState(false);
-  const [fieldTargetSection, setFieldTargetSection] = useState<'program' | string>('program');
-  const [newFieldLabel, setNewFieldLabel] = useState('');
-  const [newFieldType, setNewFieldType] = useState<FormField['type']>('text');
-  const [newFieldOptions, setNewFieldOptions] = useState<string[]>(['']);
-  const [newFieldIsMultiSelect, setNewFieldIsMultiSelect] = useState(false);
 
   // Venue options
   const venueOptions = [
@@ -193,15 +261,32 @@ const AddProgramPage = () => {
     }
   }, [subPrograms.some(sp => sp.isHighlighted)]);
 
-  const handleAddSubProgram = () => {
-    const newSubProgram: SubProgram = {
-      id: Date.now().toString(),
-      name: `Sub-Program ${subPrograms.length + 1}`,
-      fields: [
-        { id: `sp${Date.now()}-1`, label: 'Title', type: 'text', value: '', isRemovable: false },
-      ],
-      isHighlighted: true,
+  // Pre-fill sub-program fields from main program
+  const prefillSubProgramFields = (subProgram: SubProgram): SubProgram => {
+    return {
+      ...subProgram,
+      description: subProgram.description || programDescription || '',
+      banner: subProgram.banner || uploadedBanner,
+      modeOfProgram: subProgram.modeOfProgram || modeOfProgram || 'online',
+      currency: subProgram.currency || selectedCurrency || 'INR',
+      isPaymentRequired: subProgram.isPaymentRequired || isPaymentRequired || 'yes',
     };
+  };
+
+  const handleAddSubProgram = () => {
+    const newSubProgram: SubProgram = prefillSubProgramFields({
+      id: Date.now().toString(),
+      title: `Sub-Program ${subPrograms.length + 1}`,
+      description: '',
+      modeOfProgram: 'online',
+      venueAddress: [],
+      customVenue: '',
+      isPaymentRequired: 'yes',
+      currency: 'INR',
+      programFee: '',
+      isHighlighted: true,
+      showCustomVenue: false,
+    });
     
     setSubPrograms(prev => [...prev, newSubProgram]);
     
@@ -212,6 +297,27 @@ const AddProgramPage = () => {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, 50);
+  };
+
+  const handleSubProgramChange = (subProgramId: string, field: keyof SubProgram, value: any) => {
+    setSubPrograms(prev => prev.map(sp => 
+      sp.id === subProgramId ? { ...sp, [field]: value } : sp
+    ));
+  };
+
+  const handleSubProgramVenueChange = (subProgramId: string, venues: string[]) => {
+    if (venues.includes('Add Custom Venue')) {
+      handleSubProgramChange(subProgramId, 'showCustomVenue', true);
+      const filteredVenues = venues.filter(v => v !== 'Add Custom Venue');
+      handleSubProgramChange(subProgramId, 'venueAddress', filteredVenues);
+    } else {
+      handleSubProgramChange(subProgramId, 'showCustomVenue', false);
+      handleSubProgramChange(subProgramId, 'venueAddress', venues);
+    }
+  };
+
+  const handleSubProgramBannerUpload = (subProgramId: string, file: File | null) => {
+    handleSubProgramChange(subProgramId, 'banner', file);
   };
 
   const handleSave = (data: z.infer<typeof programDetailsSchema>) => {
@@ -257,6 +363,11 @@ const AddProgramPage = () => {
       default:
         return 'border-blue-500 border-2 shadow-lg bg-blue-50';
     }
+  };
+
+  const isDateWithinProgramRange = (date: Date) => {
+    if (!startDate || !endDate) return true;
+    return date >= startDate && date <= endDate;
   };
 
   return (
@@ -329,7 +440,7 @@ const AddProgramPage = () => {
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSave)} className="space-y-12">
-                {/* Program Details Section */}
+                {/* Program Details Section - Keep existing code */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                   <div className="flex items-center justify-between mb-8">
                     <h2 className="text-xl font-semibold text-gray-800">Program Details</h2>
@@ -512,132 +623,6 @@ const AddProgramPage = () => {
                         </FormItem>
                       )}
                     />
-
-                    {/* Conditional Fields - Venue Address with smooth transition */}
-                    <div className={cn(
-                      "md:col-span-2 overflow-hidden transition-all duration-500 ease-in-out",
-                      (modeOfProgram === 'offline' || modeOfProgram === 'hybrid') 
-                        ? "max-h-96 opacity-100 transform translate-y-0" 
-                        : "max-h-0 opacity-0 transform -translate-y-4"
-                    )}>
-                      <div className="space-y-6 pt-2">
-                        <FormField
-                          control={form.control}
-                          name="venueAddress"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium text-gray-700">Where will your program take place?</FormLabel>
-                              <FormControl>
-                                <Select onValueChange={(value) => handleVenueChange([...field.value || [], value])}>
-                                  <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200">
-                                    <SelectValue placeholder="Select venue(s)" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {venueOptions.map((venue) => (
-                                      <SelectItem key={venue} value={venue} className="py-3">
-                                        {venue}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              {field.value && field.value.length > 0 && (
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                  {field.value.map((venue, index) => (
-                                    <span key={index} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium border border-blue-200">
-                                      {venue}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Custom Venue Input with smooth transition */}
-                        <div className={cn(
-                          "overflow-hidden transition-all duration-300 ease-in-out",
-                          showCustomVenue 
-                            ? "max-h-24 opacity-100 transform translate-y-0" 
-                            : "max-h-0 opacity-0 transform -translate-y-2"
-                        )}>
-                          <FormField
-                            control={form.control}
-                            name="customVenue"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">Add your custom venue</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="Enter venue address" 
-                                    className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* Travel Required */}
-                        <FormField
-                          control={form.control}
-                          name="isTravelRequired"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium text-gray-700">Will participants need to travel?</FormLabel>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                  className="flex flex-row space-x-8 mt-2"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="yes" id="travel-yes" className="border-gray-300 text-blue-600" />
-                                    <Label htmlFor="travel-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="no" id="travel-no" className="border-gray-300 text-blue-600" />
-                                    <Label htmlFor="travel-no" className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
-                                  </div>
-                                </RadioGroup>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Residential */}
-                        <FormField
-                          control={form.control}
-                          name="isResidential"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium text-gray-700">Is this a residential program?</FormLabel>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                  className="flex flex-row space-x-8 mt-2"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="yes" id="residential-yes" className="border-gray-300 text-blue-600" />
-                                    <Label htmlFor="residential-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="no" id="residential-no" className="border-gray-300 text-blue-600" />
-                                    <Label htmlFor="residential-no" className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
-                                  </div>
-                                </RadioGroup>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
 
                     {/* Payment Required */}
                     <FormField
@@ -990,44 +975,334 @@ const AddProgramPage = () => {
                   </div>
                 </div>
 
+                {/* Personalized Welcome Message for Sub-Programs */}
+                <div className="text-center py-8">
+                  <div className="max-w-2xl mx-auto">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Great progress! 🎉</h2>
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                      Now let's set up your sub-programs to create a structured learning journey for your participants. 
+                      Each sub-program can have its own schedule, format, and requirements while staying within your main program framework.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Sub-Program Details Section */}
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-medium text-gray-800">Sub-Program Details</h2>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-xl font-semibold text-gray-800">Sub-Program Details</h2>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={handleAddSubProgram}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
                     >
                       <Plus size={16} />
                       Add Sub-Program
                     </Button>
                   </div>
 
-                  <div className="space-y-8">
+                  <div className="space-y-12">
                     {subPrograms.map((subProgram) => (
                       <div 
                         key={subProgram.id} 
                         ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
-                        className={`border rounded-lg p-4 transition-all duration-300 ease-in-out ${getHighlightClasses(subProgram)}`}
+                        className={`border rounded-xl p-8 transition-all duration-300 ease-in-out ${getHighlightClasses(subProgram)}`}
                       >
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-medium text-gray-700">{subProgram.name}</h3>
+                        <div className="flex items-center justify-between mb-8">
+                          <h3 className="text-lg font-semibold text-gray-700">{subProgram.title}</h3>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {subProgram.fields.map(field => (
-                            <div key={field.id} className="space-y-2">
-                              <Label htmlFor={field.id}>{field.label}</Label>
-                              <Input
-                                id={field.id}
-                                type={field.type}
-                                value={field.value}
-                                placeholder={`Enter ${field.label.toLowerCase()}`}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* Sub-Program Title */}
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Sub-program title</Label>
+                            <Input
+                              value={subProgram.title}
+                              onChange={(e) => handleSubProgramChange(subProgram.id, 'title', e.target.value)}
+                              placeholder="Enter sub-program title"
+                              className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                            />
+                          </div>
+
+                          {/* Sub-Program Banner Upload */}
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Upload sub-program banner</Label>
+                            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-300 cursor-pointer group">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleSubProgramBannerUpload(subProgram.id, e.target.files?.[0] || null)}
+                                className="hidden"
+                                id={`banner-upload-${subProgram.id}`}
                               />
+                              <label htmlFor={`banner-upload-${subProgram.id}`} className="cursor-pointer">
+                                <Upload className="mx-auto h-8 w-8 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                                <p className="mt-2 text-sm font-medium text-gray-700">
+                                  {subProgram.banner ? subProgram.banner.name : (uploadedBanner ? `Using: ${uploadedBanner.name}` : "Click to upload")}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                              </label>
                             </div>
-                          ))}
+                          </div>
+
+                          {/* Sub-Program Description */}
+                          <div className="md:col-span-2 space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Tell us about this sub-program</Label>
+                            <Textarea 
+                              value={subProgram.description}
+                              onChange={(e) => handleSubProgramChange(subProgram.id, 'description', e.target.value)}
+                              placeholder={programDescription ? `Pre-filled: ${programDescription.slice(0, 50)}...` : "Describe this sub-program..."}
+                              className="min-h-[100px] border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 resize-none"
+                            />
+                          </div>
+
+                          {/* Sub-Program Start Date */}
+                          <div className="flex flex-col space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Sub-program start date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
+                                    !subProgram.startDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  {subProgram.startDate ? (
+                                    format(subProgram.startDate, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={subProgram.startDate || undefined}
+                                  onSelect={(date) => handleSubProgramChange(subProgram.id, 'startDate', date)}
+                                  disabled={(date) => !isDateWithinProgramRange(date)}
+                                  initialFocus
+                                  className="pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            {startDate && endDate && (
+                              <p className="text-xs text-gray-500">Must be between {format(startDate, "PPP")} and {format(endDate, "PPP")}</p>
+                            )}
+                          </div>
+
+                          {/* Sub-Program End Date */}
+                          <div className="flex flex-col space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Sub-program end date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
+                                    !subProgram.endDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  {subProgram.endDate ? (
+                                    format(subProgram.endDate, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={subProgram.endDate || undefined}
+                                  onSelect={(date) => handleSubProgramChange(subProgram.id, 'endDate', date)}
+                                  disabled={(date) => 
+                                    !isDateWithinProgramRange(date) || 
+                                    (subProgram.startDate && date < subProgram.startDate)
+                                  }
+                                  initialFocus
+                                  className="pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+
+                          {/* Mode of Sub-Program */}
+                          <div className="md:col-span-2 space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">How will this sub-program be delivered?</Label>
+                            <RadioGroup
+                              value={subProgram.modeOfProgram}
+                              onValueChange={(value) => handleSubProgramChange(subProgram.id, 'modeOfProgram', value as 'online' | 'offline' | 'hybrid')}
+                              className="flex flex-row space-x-8 mt-2"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="online" id={`online-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                <Label htmlFor={`online-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">Online</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="offline" id={`offline-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                <Label htmlFor={`offline-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">In-person</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="hybrid" id={`hybrid-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                <Label htmlFor={`hybrid-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">Hybrid</Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {/* Conditional Fields - Venue Address */}
+                          <div className={cn(
+                            "md:col-span-2 overflow-hidden transition-all duration-500 ease-in-out",
+                            (subProgram.modeOfProgram === 'offline' || subProgram.modeOfProgram === 'hybrid') 
+                              ? "max-h-96 opacity-100 transform translate-y-0" 
+                              : "max-h-0 opacity-0 transform -translate-y-4"
+                          )}>
+                            <div className="space-y-6 pt-2">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700">Where will this sub-program take place?</Label>
+                                <Select onValueChange={(value) => handleSubProgramVenueChange(subProgram.id, [...subProgram.venueAddress, value])}>
+                                  <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200">
+                                    <SelectValue placeholder="Select venue(s)" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {venueOptions.map((venue) => (
+                                      <SelectItem key={venue} value={venue} className="py-3">
+                                        {venue}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                {subProgram.venueAddress && subProgram.venueAddress.length > 0 && (
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {subProgram.venueAddress.map((venue, index) => (
+                                      <span key={index} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium border border-blue-200">
+                                        {venue}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Custom Venue Input */}
+                              <div className={cn(
+                                "overflow-hidden transition-all duration-300 ease-in-out",
+                                subProgram.showCustomVenue 
+                                  ? "max-h-24 opacity-100 transform translate-y-0" 
+                                  : "max-h-0 opacity-0 transform -translate-y-2"
+                              )}>
+                                <div className="space-y-2">
+                                  <Label className="text-sm font-medium text-gray-700">Add your custom venue</Label>
+                                  <Input 
+                                    value={subProgram.customVenue}
+                                    onChange={(e) => handleSubProgramChange(subProgram.id, 'customVenue', e.target.value)}
+                                    placeholder="Enter venue address" 
+                                    className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Travel Required */}
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700">Will participants need to travel?</Label>
+                                <RadioGroup
+                                  value={subProgram.isTravelRequired}
+                                  onValueChange={(value) => handleSubProgramChange(subProgram.id, 'isTravelRequired', value as 'yes' | 'no')}
+                                  className="flex flex-row space-x-8 mt-2"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id={`travel-yes-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor={`travel-yes-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id={`travel-no-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor={`travel-no-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
+                                  </div>
+                                </RadioGroup>
+                              </div>
+
+                              {/* Residential */}
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700">Is this a residential sub-program?</Label>
+                                <RadioGroup
+                                  value={subProgram.isResidential}
+                                  onValueChange={(value) => handleSubProgramChange(subProgram.id, 'isResidential', value as 'yes' | 'no')}
+                                  className="flex flex-row space-x-8 mt-2"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id={`residential-yes-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor={`residential-yes-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id={`residential-no-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor={`residential-no-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
+                                  </div>
+                                </RadioGroup>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Payment Required */}
+                          <div className="md:col-span-2 space-y-2">
+                            <Label className="text-sm font-medium text-gray-700">Is there a fee for this sub-program?</Label>
+                            <RadioGroup
+                              value={subProgram.isPaymentRequired}
+                              onValueChange={(value) => handleSubProgramChange(subProgram.id, 'isPaymentRequired', value as 'yes' | 'no')}
+                              className="flex flex-row space-x-8 mt-2"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="yes" id={`payment-yes-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                <Label htmlFor={`payment-yes-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="no" id={`payment-no-${subProgram.id}`} className="border-gray-300 text-blue-600" />
+                                <Label htmlFor={`payment-no-${subProgram.id}`} className="text-sm font-medium text-gray-700 cursor-pointer">No, it's free</Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {/* Currency and Fee - Conditional */}
+                          <div className={cn(
+                            "md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden transition-all duration-500 ease-in-out",
+                            subProgram.isPaymentRequired === 'yes' 
+                              ? "max-h-32 opacity-100 transform translate-y-0" 
+                              : "max-h-0 opacity-0 transform -translate-y-4"
+                          )}>
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium text-gray-700">What currency will you use?</Label>
+                              <Select 
+                                value={subProgram.currency} 
+                                onValueChange={(value) => handleSubProgramChange(subProgram.id, 'currency', value)}
+                              >
+                                <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200">
+                                  <SelectValue placeholder="Select currency" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {currencyOptions.map((currency) => (
+                                    <SelectItem key={currency.value} value={currency.value} className="py-3">
+                                      {currency.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium text-gray-700">What's the sub-program fee?</Label>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                                  {getCurrencySymbol(subProgram.currency || 'INR')}
+                                </span>
+                                <Input 
+                                  value={subProgram.programFee}
+                                  onChange={(e) => handleSubProgramChange(subProgram.id, 'programFee', e.target.value)}
+                                  placeholder="0.00" 
+                                  className="h-11 pl-8 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
