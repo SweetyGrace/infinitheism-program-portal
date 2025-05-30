@@ -330,21 +330,25 @@ const AddProgramPage = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSave)} className="space-y-12">
                 {/* Program Details Section */}
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-medium text-gray-800">Program Details</h2>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-xl font-semibold text-gray-800">Program Details</h2>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Program Name */}
                     <FormField
                       control={form.control}
                       name="programName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>What's your program called?</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">What's your program called?</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter program name" {...field} />
+                            <Input 
+                              placeholder="Enter program name" 
+                              className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                              {...field} 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -353,9 +357,9 @@ const AddProgramPage = () => {
 
                     {/* Program Banner Upload */}
                     <FormItem>
-                      <FormLabel>Upload your program banner</FormLabel>
+                      <FormLabel className="text-sm font-medium text-gray-700">Upload your program banner</FormLabel>
                       <FormControl>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-300 cursor-pointer group">
                           <input
                             type="file"
                             accept="image/*"
@@ -364,11 +368,11 @@ const AddProgramPage = () => {
                             id="banner-upload"
                           />
                           <label htmlFor="banner-upload" className="cursor-pointer">
-                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                            <p className="mt-2 text-sm text-gray-600">
+                            <Upload className="mx-auto h-10 w-10 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                            <p className="mt-3 text-sm font-medium text-gray-700">
                               {uploadedBanner ? uploadedBanner.name : "Click to upload or drag and drop"}
                             </p>
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                            <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
                           </label>
                         </div>
                       </FormControl>
@@ -380,11 +384,11 @@ const AddProgramPage = () => {
                       name="description"
                       render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                          <FormLabel>Tell us about your program</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Tell us about your program</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Describe what makes your program special..."
-                              className="min-h-[100px]"
+                              className="min-h-[120px] border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 resize-none"
                               {...field} 
                             />
                           </FormControl>
@@ -399,14 +403,14 @@ const AddProgramPage = () => {
                       name="startDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>When does your program begin?</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">When does your program begin?</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -441,14 +445,14 @@ const AddProgramPage = () => {
                       name="endDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>When does your program end?</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">When does your program end?</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -482,25 +486,25 @@ const AddProgramPage = () => {
                       control={form.control}
                       name="modeOfProgram"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>How will your program be delivered?</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">How will your program be delivered?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-2"
+                              className="flex flex-row space-x-8 mt-2"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="online" id="online" />
-                                <Label htmlFor="online">Online</Label>
+                                <RadioGroupItem value="online" id="online" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="online" className="text-sm font-medium text-gray-700 cursor-pointer">Online</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="offline" id="offline" />
-                                <Label htmlFor="offline">In-person</Label>
+                                <RadioGroupItem value="offline" id="offline" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="offline" className="text-sm font-medium text-gray-700 cursor-pointer">In-person</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="hybrid" id="hybrid" />
-                                <Label htmlFor="hybrid">Hybrid (Online + In-person)</Label>
+                                <RadioGroupItem value="hybrid" id="hybrid" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="hybrid" className="text-sm font-medium text-gray-700 cursor-pointer">Hybrid</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -509,23 +513,28 @@ const AddProgramPage = () => {
                       )}
                     />
 
-                    {/* Conditional Fields - Venue Address */}
-                    {(modeOfProgram === 'offline' || modeOfProgram === 'hybrid') && (
-                      <div className="md:col-span-2 animate-fade-in">
+                    {/* Conditional Fields - Venue Address with smooth transition */}
+                    <div className={cn(
+                      "md:col-span-2 overflow-hidden transition-all duration-500 ease-in-out",
+                      (modeOfProgram === 'offline' || modeOfProgram === 'hybrid') 
+                        ? "max-h-96 opacity-100 transform translate-y-0" 
+                        : "max-h-0 opacity-0 transform -translate-y-4"
+                    )}>
+                      <div className="space-y-6 pt-2">
                         <FormField
                           control={form.control}
                           name="venueAddress"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Where will your program take place?</FormLabel>
+                              <FormLabel className="text-sm font-medium text-gray-700">Where will your program take place?</FormLabel>
                               <FormControl>
                                 <Select onValueChange={(value) => handleVenueChange([...field.value || [], value])}>
-                                  <SelectTrigger>
+                                  <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200">
                                     <SelectValue placeholder="Select venue(s)" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {venueOptions.map((venue) => (
-                                      <SelectItem key={venue} value={venue}>
+                                      <SelectItem key={venue} value={venue} className="py-3">
                                         {venue}
                                       </SelectItem>
                                     ))}
@@ -533,9 +542,9 @@ const AddProgramPage = () => {
                                 </Select>
                               </FormControl>
                               {field.value && field.value.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
+                                <div className="mt-3 flex flex-wrap gap-2">
                                   {field.value.map((venue, index) => (
-                                    <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm">
+                                    <span key={index} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium border border-blue-200">
                                       {venue}
                                     </span>
                                   ))}
@@ -546,105 +555,110 @@ const AddProgramPage = () => {
                           )}
                         />
 
-                        {/* Custom Venue Input */}
-                        {showCustomVenue && (
+                        {/* Custom Venue Input with smooth transition */}
+                        <div className={cn(
+                          "overflow-hidden transition-all duration-300 ease-in-out",
+                          showCustomVenue 
+                            ? "max-h-24 opacity-100 transform translate-y-0" 
+                            : "max-h-0 opacity-0 transform -translate-y-2"
+                        )}>
                           <FormField
                             control={form.control}
                             name="customVenue"
                             render={({ field }) => (
-                              <FormItem className="mt-4 animate-fade-in">
-                                <FormLabel>Add your custom venue</FormLabel>
+                              <FormItem>
+                                <FormLabel className="text-sm font-medium text-gray-700">Add your custom venue</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Enter venue address" {...field} />
+                                  <Input 
+                                    placeholder="Enter venue address" 
+                                    className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                    {...field} 
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-                        )}
+                        </div>
+
+                        {/* Travel Required */}
+                        <FormField
+                          control={form.control}
+                          name="isTravelRequired"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium text-gray-700">Will participants need to travel?</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  className="flex flex-row space-x-8 mt-2"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id="travel-yes" className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor="travel-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="travel-no" className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor="travel-no" className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Residential */}
+                        <FormField
+                          control={form.control}
+                          name="isResidential"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium text-gray-700">Is this a residential program?</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  className="flex flex-row space-x-8 mt-2"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id="residential-yes" className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor="residential-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="residential-no" className="border-gray-300 text-blue-600" />
+                                    <Label htmlFor="residential-no" className="text-sm font-medium text-gray-700 cursor-pointer">No</Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                    )}
-
-                    {/* Travel Required */}
-                    {(modeOfProgram === 'offline' || modeOfProgram === 'hybrid') && (
-                      <FormField
-                        control={form.control}
-                        name="isTravelRequired"
-                        render={({ field }) => (
-                          <FormItem className="space-y-3 animate-fade-in">
-                            <FormLabel>Will participants need to travel?</FormLabel>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="flex flex-col space-y-2"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="yes" id="travel-yes" />
-                                  <Label htmlFor="travel-yes">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="no" id="travel-no" />
-                                  <Label htmlFor="travel-no">No</Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-
-                    {/* Residential */}
-                    {(modeOfProgram === 'offline' || modeOfProgram === 'hybrid') && (
-                      <FormField
-                        control={form.control}
-                        name="isResidential"
-                        render={({ field }) => (
-                          <FormItem className="space-y-3 animate-fade-in">
-                            <FormLabel>Is this a residential program?</FormLabel>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="flex flex-col space-y-2"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="yes" id="residential-yes" />
-                                  <Label htmlFor="residential-yes">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem value="no" id="residential-no" />
-                                  <Label htmlFor="residential-no">No</Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                    </div>
 
                     {/* Payment Required */}
                     <FormField
                       control={form.control}
                       name="isPaymentRequired"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Is there a fee for your program?</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Is there a fee for your program?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-2"
+                              className="flex flex-row space-x-8 mt-2"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="payment-yes" />
-                                <Label htmlFor="payment-yes">Yes</Label>
+                                <RadioGroupItem value="yes" id="payment-yes" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="payment-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="payment-no" />
-                                <Label htmlFor="payment-no">No, it's free</Label>
+                                <RadioGroupItem value="no" id="payment-no" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="payment-no" className="text-sm font-medium text-gray-700 cursor-pointer">No, it's free</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -653,59 +667,62 @@ const AddProgramPage = () => {
                       )}
                     />
 
-                    {/* Currency and Fee - Conditional */}
-                    {isPaymentRequired === 'yes' && (
-                      <>
-                        <FormField
-                          control={form.control}
-                          name="currency"
-                          render={({ field }) => (
-                            <FormItem className="animate-fade-in">
-                              <FormLabel>What currency will you use?</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select currency" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {currencyOptions.map((currency) => (
-                                    <SelectItem key={currency.value} value={currency.value}>
-                                      {currency.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="programFee"
-                          render={({ field }) => (
-                            <FormItem className="animate-fade-in">
-                              <FormLabel>What's the program fee?</FormLabel>
+                    {/* Currency and Fee - Conditional with smooth transition */}
+                    <div className={cn(
+                      "md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden transition-all duration-500 ease-in-out",
+                      isPaymentRequired === 'yes' 
+                        ? "max-h-32 opacity-100 transform translate-y-0" 
+                        : "max-h-0 opacity-0 transform -translate-y-4"
+                    )}>
+                      <FormField
+                        control={form.control}
+                        name="currency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700">What currency will you use?</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                    {getCurrencySymbol(selectedCurrency || 'INR')}
-                                  </span>
-                                  <Input 
-                                    placeholder="0.00" 
-                                    className="pl-8"
-                                    type="number"
-                                    {...field} 
-                                  />
-                                </div>
+                                <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200">
+                                  <SelectValue placeholder="Select currency" />
+                                </SelectTrigger>
                               </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </>
-                    )}
+                              <SelectContent>
+                                {currencyOptions.map((currency) => (
+                                  <SelectItem key={currency.value} value={currency.value} className="py-3">
+                                    {currency.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="programFee"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700">What's the program fee?</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                                  {getCurrencySymbol(selectedCurrency || 'INR')}
+                                </span>
+                                <Input 
+                                  placeholder="0.00" 
+                                  className="h-11 pl-8 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                  type="number"
+                                  {...field} 
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     {/* Registration Start Date & Time */}
                     <FormField
@@ -713,14 +730,14 @@ const AddProgramPage = () => {
                       name="registrationStartDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>When does registration open?</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">When does registration open?</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -754,9 +771,9 @@ const AddProgramPage = () => {
                       name="registrationStartTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Registration start time</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Registration start time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} />
+                            <Input type="time" className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -769,14 +786,14 @@ const AddProgramPage = () => {
                       name="registrationEndDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>When does registration close?</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">When does registration close?</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full pl-3 text-left font-normal",
+                                    "w-full h-11 pl-3 text-left font-normal border-gray-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200",
                                     !field.value && "text-muted-foreground"
                                   )}
                                 >
@@ -810,9 +827,9 @@ const AddProgramPage = () => {
                       name="registrationEndTime"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Registration end time</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Registration end time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} />
+                            <Input type="time" className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -824,21 +841,21 @@ const AddProgramPage = () => {
                       control={form.control}
                       name="approvalRequired"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Do you need to approve registrations?</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Do you need to approve registrations?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-2"
+                              className="flex flex-row space-x-8 mt-2"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="approval-yes" />
-                                <Label htmlFor="approval-yes">Yes, I'll approve each registration</Label>
+                                <RadioGroupItem value="yes" id="approval-yes" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="approval-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes, I'll approve each registration</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="approval-no" />
-                                <Label htmlFor="approval-no">No, auto-approve registrations</Label>
+                                <RadioGroupItem value="no" id="approval-no" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="approval-no" className="text-sm font-medium text-gray-700 cursor-pointer">No, auto-approve registrations</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -852,21 +869,21 @@ const AddProgramPage = () => {
                       control={form.control}
                       name="hasSeatLimit"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Is there a limit on participants?</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Is there a limit on participants?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-2"
+                              className="flex flex-row space-x-8 mt-2"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="limit-yes" />
-                                <Label htmlFor="limit-yes">Yes, limit participants</Label>
+                                <RadioGroupItem value="yes" id="limit-yes" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="limit-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes, limit participants</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="limit-no" />
-                                <Label htmlFor="limit-no">No, unlimited participants</Label>
+                                <RadioGroupItem value="no" id="limit-no" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="limit-no" className="text-sm font-medium text-gray-700 cursor-pointer">No, unlimited participants</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -881,13 +898,14 @@ const AddProgramPage = () => {
                         control={form.control}
                         name="seatLimit"
                         render={({ field }) => (
-                          <FormItem className="animate-fade-in">
-                            <FormLabel>How many participants can join?</FormLabel>
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700">How many participants can join?</FormLabel>
                             <FormControl>
                               <Input 
                                 type="number" 
                                 placeholder="Enter number of seats"
                                 min="1"
+                                className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                                 {...field} 
                               />
                             </FormControl>
@@ -902,21 +920,21 @@ const AddProgramPage = () => {
                       control={form.control}
                       name="hasWaitlist"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Enable waitlist when full?</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-sm font-medium text-gray-700">Enable waitlist when full?</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="flex flex-col space-y-2"
+                              className="flex flex-row space-x-8 mt-2"
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="yes" id="waitlist-yes" />
-                                <Label htmlFor="waitlist-yes">Yes, allow waitlist</Label>
+                                <RadioGroupItem value="yes" id="waitlist-yes" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="waitlist-yes" className="text-sm font-medium text-gray-700 cursor-pointer">Yes, allow waitlist</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="no" id="waitlist-no" />
-                                <Label htmlFor="waitlist-no">No waitlist</Label>
+                                <RadioGroupItem value="no" id="waitlist-no" className="border-gray-300 text-blue-600" />
+                                <Label htmlFor="waitlist-no" className="text-sm font-medium text-gray-700 cursor-pointer">No waitlist</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>
@@ -931,13 +949,14 @@ const AddProgramPage = () => {
                         control={form.control}
                         name="waitlistTriggerCount"
                         render={({ field }) => (
-                          <FormItem className="animate-fade-in">
-                            <FormLabel>Waitlist trigger count</FormLabel>
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700">Waitlist trigger count</FormLabel>
                             <FormControl>
                               <Input 
                                 type="number" 
                                 placeholder="When to start waitlist"
                                 min="1"
+                                className="h-11 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                                 {...field} 
                               />
                             </FormControl>
