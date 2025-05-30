@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '@/components/DateRangePicker';
@@ -17,16 +18,19 @@ import { DeleteSubProgramDialog } from '@/components/DeleteSubProgramDialog';
 interface SubProgram {
   id: string;
   title: string;
+  banner: string;
   description: string;
   dateRange: DateRange | undefined;
+  mode: 'online' | 'offline' | 'hybrid' | '';
   fee: string;
+  paymentMethod: string;
   customFields: Record<string, any>;
 }
 
 interface ProgramData {
   title: string;
+  banner: string;
   description: string;
-  dateRange: DateRange | undefined;
   hdbFee: string;
   msdFee: string;
   customFields: Record<string, any>;
@@ -38,8 +42,8 @@ const AddProgramPage = () => {
   // Main program data
   const [programData, setProgramData] = useState<ProgramData>({
     title: '',
+    banner: '',
     description: '',
-    dateRange: undefined,
     hdbFee: '',
     msdFee: '',
     customFields: {},
@@ -51,11 +55,11 @@ const AddProgramPage = () => {
 
   // Sub-programs with default ones
   const [subPrograms, setSubPrograms] = useState<SubProgram[]>([
-    { id: '1', title: 'HDB 1', description: '', dateRange: undefined, fee: '', customFields: {} },
-    { id: '2', title: 'HDB 2', description: '', dateRange: undefined, fee: '', customFields: {} },
-    { id: '3', title: 'HDB 3', description: '', dateRange: undefined, fee: '', customFields: {} },
-    { id: '4', title: 'MSD 1', description: '', dateRange: undefined, fee: '', customFields: {} },
-    { id: '5', title: 'MSD 2', description: '', dateRange: undefined, fee: '', customFields: {} },
+    { id: '1', title: 'HDB 1', banner: '', description: '', dateRange: undefined, mode: '', fee: '', paymentMethod: '', customFields: {} },
+    { id: '2', title: 'HDB 2', banner: '', description: '', dateRange: undefined, mode: '', fee: '', paymentMethod: '', customFields: {} },
+    { id: '3', title: 'HDB 3', banner: '', description: '', dateRange: undefined, mode: '', fee: '', paymentMethod: '', customFields: {} },
+    { id: '4', title: 'MSD 1', banner: '', description: '', dateRange: undefined, mode: '', fee: '', paymentMethod: '', customFields: {} },
+    { id: '5', title: 'MSD 2', banner: '', description: '', dateRange: undefined, mode: '', fee: '', paymentMethod: '', customFields: {} },
   ]);
 
   // Dialog states
@@ -77,6 +81,14 @@ const AddProgramPage = () => {
         return sub;
       }));
     }
+
+    // Auto-fill banner and description to all sub-programs
+    if (field === 'banner' || field === 'description') {
+      setSubPrograms(prev => prev.map(sub => ({
+        ...sub,
+        [field]: value
+      })));
+    }
   };
 
   const updateSubProgram = (id: string, field: keyof SubProgram, value: any) => {
@@ -87,13 +99,23 @@ const AddProgramPage = () => {
 
   const handleAddField = (field: CustomField, applyToSubPrograms?: boolean) => {
     if (addFieldDialog.isSubProgram) {
-      // Add field to specific sub-program
-      setSubProgramCustomFields(prev => [...prev, field]);
-      setSubPrograms(prev => prev.map(sub => 
-        sub.id === addFieldDialog.subProgramId 
-          ? { ...sub, customFields: { ...sub.customFields, [field.id]: field.defaultValue || '' } }
-          : sub
-      ));
+      // Add field to specific sub-program or all sub-programs
+      if (addFieldDialog.subProgramId) {
+        // Add to specific sub-program
+        setSubProgramCustomFields(prev => [...prev, field]);
+        setSubPrograms(prev => prev.map(sub => 
+          sub.id === addFieldDialog.subProgramId 
+            ? { ...sub, customFields: { ...sub.customFields, [field.id]: field.defaultValue || '' } }
+            : sub
+        ));
+      } else {
+        // Add to all sub-programs
+        setSubProgramCustomFields(prev => [...prev, field]);
+        setSubPrograms(prev => prev.map(sub => ({
+          ...sub,
+          customFields: { ...sub.customFields, [field.id]: field.defaultValue || '' }
+        })));
+      }
     } else {
       // Add field to program
       setProgramCustomFields(prev => [...prev, field]);
@@ -118,15 +140,46 @@ const AddProgramPage = () => {
     toast({ title: "Sub-program deleted successfully" });
   };
 
+  const handleAddSubProgram = () => {
+    const newSubProgram: SubProgram = {
+      id: Date.now().toString(),
+      title: `Sub Program ${subPrograms.length + 1}`,
+      banner: programData.banner, // Pre-fill from program
+      description: programData.description, // Pre-fill from program
+      dateRange: undefined,
+      mode: '',
+      fee: '',
+      paymentMethod: '',
+      customFields: {}
+    };
+
+    // Add any existing custom fields
+    subProgramCustomFields.forEach(field => {
+      newSubProgram.customFields[field.id] = field.defaultValue || '';
+    });
+
+    setSubPrograms(prev => [...prev, newSubProgram]);
+    toast({ title: "Sub-program added successfully" });
+  };
+
   const openDeleteDialog = (id: string, title: string) => {
     setDeleteDialog({ isOpen: true, subProgramId: id, subProgramTitle: title });
   };
 
-  const isDateRangeValid = (subDateRange: DateRange | undefined) => {
-    if (!programData.dateRange?.from || !programData.dateRange?.to || !subDateRange?.from || !subDateRange?.to) {
-      return true; // Allow if not fully set
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>, isSubProgram: boolean = false, subProgramId?: string) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (isSubProgram && subProgramId) {
+          updateSubProgram(subProgramId, 'banner', result);
+        } else {
+          updateProgramData('banner', result);
+        }
+      };
+      reader.readAsDataURL(file);
     }
-    return subDateRange.from >= programData.dateRange.from && subDateRange.to <= programData.dateRange.to;
   };
 
   const handleSave = () => {
@@ -199,6 +252,22 @@ const AddProgramPage = () => {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="banner">Program Banner</Label>
+                  <div className="flex items-center space-x-4">
+                    <Input
+                      id="banner"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBannerUpload(e)}
+                      className="h-11"
+                    />
+                    {programData.banner && (
+                      <img src={programData.banner} alt="Banner preview" className="w-16 h-16 object-cover rounded" />
+                    )}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="hdbFee">HDB Program Fee</Label>
@@ -237,14 +306,6 @@ const AddProgramPage = () => {
                   />
                 ))}
               </div>
-
-              <div>
-                <DateRangePicker
-                  value={programData.dateRange}
-                  onChange={(range) => updateProgramData('dateRange', range)}
-                  label="Program Duration *"
-                />
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -257,15 +318,26 @@ const AddProgramPage = () => {
                 <CardTitle className="text-xl text-gray-900">Sub-Program Configuration</CardTitle>
                 <p className="text-gray-600 mt-1">Configure individual sub-programs within this program.</p>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setAddFieldDialog({ isOpen: true, isSubProgram: true, subProgramId: '' })}
-                className="flex items-center space-x-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Field to All</span>
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setAddFieldDialog({ isOpen: true, isSubProgram: true, subProgramId: '' })}
+                  className="flex items-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Field to All</span>
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={handleAddSubProgram}
+                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Sub Program</span>
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -298,6 +370,31 @@ const AddProgramPage = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
+                      <Label>Title</Label>
+                      <Input
+                        value={subProgram.title}
+                        onChange={(e) => updateSubProgram(subProgram.id, 'title', e.target.value)}
+                        placeholder="Enter sub-program title"
+                        className="h-10"
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Banner</Label>
+                      <div className="flex items-center space-x-4">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleBannerUpload(e, true, subProgram.id)}
+                          className="h-10"
+                        />
+                        {subProgram.banner && (
+                          <img src={subProgram.banner} alt="Banner preview" className="w-12 h-12 object-cover rounded" />
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
                       <Label>Description</Label>
                       <Textarea
                         value={subProgram.description}
@@ -307,31 +404,48 @@ const AddProgramPage = () => {
                       />
                     </div>
 
-                    <div>
-                      <Label>Fee</Label>
-                      <Input
-                        type="number"
-                        value={subProgram.fee}
-                        onChange={(e) => updateSubProgram(subProgram.id, 'fee', e.target.value)}
-                        placeholder="0.00"
-                        className="h-10"
-                      />
-                    </div>
-
                     <DateRangePicker
                       value={subProgram.dateRange}
                       onChange={(range) => updateSubProgram(subProgram.id, 'dateRange', range)}
                       label="Sub-Program Duration"
-                      minDate={programData.dateRange?.from}
-                      maxDate={programData.dateRange?.to}
-                      disabled={!programData.dateRange?.from || !programData.dateRange?.to}
                     />
 
-                    {!isDateRangeValid(subProgram.dateRange) && (
-                      <p className="text-red-500 text-sm">
-                        Sub-program dates must be within the program duration.
-                      </p>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Mode</Label>
+                        <Select value={subProgram.mode} onValueChange={(value: 'online' | 'offline' | 'hybrid') => updateSubProgram(subProgram.id, 'mode', value)}>
+                          <SelectTrigger className="h-10">
+                            <SelectValue placeholder="Select mode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="online">Online</SelectItem>
+                            <SelectItem value="offline">Offline</SelectItem>
+                            <SelectItem value="hybrid">Hybrid</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label>Fee</Label>
+                        <Input
+                          type="number"
+                          value={subProgram.fee}
+                          onChange={(e) => updateSubProgram(subProgram.id, 'fee', e.target.value)}
+                          placeholder="0.00"
+                          className="h-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>Payment Method</Label>
+                      <Input
+                        value={subProgram.paymentMethod}
+                        onChange={(e) => updateSubProgram(subProgram.id, 'paymentMethod', e.target.value)}
+                        placeholder="Enter payment method"
+                        className="h-10"
+                      />
+                    </div>
 
                     {/* Render Sub-Program Custom Fields */}
                     {subProgramCustomFields.map((field) => (
