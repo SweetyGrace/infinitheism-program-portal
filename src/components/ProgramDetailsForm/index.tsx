@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { 
   Paper, 
   Typography, 
-  Grid, 
   TextField, 
   FormControl, 
   FormLabel, 
@@ -18,7 +17,8 @@ import {
   Box,
   Button,
   FormHelperText,
-  InputAdornment
+  InputAdornment,
+  Stack
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -87,175 +87,171 @@ const ProgramDetailsForm = ({
           Program Details
         </Typography>
         
-        <Grid container spacing={3}>
-          {/* Program Name */}
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="programName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="What's your program called?"
-                  placeholder="Enter program name"
-                  error={!!errors.programName}
-                  helperText={errors.programName?.message}
-                  variant="outlined"
-                />
-              )}
-            />
-          </Grid>
+        <Stack spacing={3}>
+          {/* Program Name and Banner Row */}
+          <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="programName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="What's your program called?"
+                    placeholder="Enter program name"
+                    error={!!errors.programName}
+                    helperText={errors.programName?.message}
+                    variant="outlined"
+                  />
+                )}
+              />
+            </Box>
 
-          {/* Program Banner Upload */}
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <FormLabel sx={{ mb: 1, color: 'text.primary' }}>Upload your program banner</FormLabel>
-              <Box
-                sx={{
-                  border: '2px dashed',
-                  borderColor: 'grey.300',
-                  borderRadius: 2,
-                  p: 4,
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    bgcolor: 'primary.50'
-                  }
-                }}
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onBannerUpload}
-                  style={{ display: 'none' }}
-                  id="banner-upload"
-                />
-                <label htmlFor="banner-upload" style={{ cursor: 'pointer' }}>
-                  <Upload sx={{ fontSize: 40, color: 'grey.400', mb: 2 }} />
-                  <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
-                    {uploadedBanner ? uploadedBanner.name : "Click to upload or drag and drop"}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    PNG, JPG, GIF up to 10MB
-                  </Typography>
-                </label>
-              </Box>
-            </FormControl>
-          </Grid>
+            <Box sx={{ flex: 1 }}>
+              <FormControl fullWidth>
+                <FormLabel sx={{ mb: 1, color: 'text.primary' }}>Upload your program banner</FormLabel>
+                <Box
+                  sx={{
+                    border: '2px dashed',
+                    borderColor: 'grey.300',
+                    borderRadius: 2,
+                    p: 4,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      bgcolor: 'primary.50'
+                    }
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={onBannerUpload}
+                    style={{ display: 'none' }}
+                    id="banner-upload"
+                  />
+                  <label htmlFor="banner-upload" style={{ cursor: 'pointer' }}>
+                    <Upload sx={{ fontSize: 40, color: 'grey.400', mb: 2 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                      {uploadedBanner ? uploadedBanner.name : "Click to upload or drag and drop"}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      PNG, JPG, GIF up to 10MB
+                    </Typography>
+                  </label>
+                </Box>
+              </FormControl>
+            </Box>
+          </Box>
 
           {/* Description */}
-          <Grid item xs={12}>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Tell us about your program"
-                  placeholder="Describe what makes your program special..."
-                  error={!!errors.description}
-                  helperText={errors.description?.message}
-                  variant="outlined"
-                />
-              )}
-            />
-          </Grid>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                fullWidth
+                multiline
+                rows={4}
+                label="Tell us about your program"
+                placeholder="Describe what makes your program special..."
+                error={!!errors.description}
+                helperText={errors.description?.message}
+                variant="outlined"
+              />
+            )}
+          />
 
-          {/* Program Start Date */}
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="startDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="When does your program begin?"
-                  minDate={new Date()}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!errors.startDate,
-                      helperText: errors.startDate?.message
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
+          {/* Date Row */}
+          <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="startDate"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="When does your program begin?"
+                    minDate={new Date()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!errors.startDate,
+                        helperText: errors.startDate?.message
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Box>
 
-          {/* Program End Date */}
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="endDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="When does your program end?"
-                  minDate={startDate || new Date()}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!errors.endDate,
-                      helperText: errors.endDate?.message
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="endDate"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="When does your program end?"
+                    minDate={startDate || new Date()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!errors.endDate,
+                        helperText: errors.endDate?.message
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Box>
+          </Box>
 
           {/* Mode of Program */}
-          <Grid item xs={12}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
-                How will your program be delivered?
-              </FormLabel>
-              <Controller
-                name="modeOfProgram"
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup {...field} row>
-                    <FormControlLabel value="online" control={<Radio />} label="Online" />
-                    <FormControlLabel value="offline" control={<Radio />} label="In-person" />
-                    <FormControlLabel value="hybrid" control={<Radio />} label="Hybrid" />
-                  </RadioGroup>
-                )}
-              />
-              {errors.modeOfProgram && (
-                <FormHelperText error>{errors.modeOfProgram?.message}</FormHelperText>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+              How will your program be delivered?
+            </FormLabel>
+            <Controller
+              name="modeOfProgram"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup {...field} row>
+                  <FormControlLabel value="online" control={<Radio />} label="Online" />
+                  <FormControlLabel value="offline" control={<Radio />} label="In-person" />
+                  <FormControlLabel value="hybrid" control={<Radio />} label="Hybrid" />
+                </RadioGroup>
               )}
-            </FormControl>
-          </Grid>
+            />
+            {errors.modeOfProgram && (
+              <FormHelperText error>{errors.modeOfProgram?.message}</FormHelperText>
+            )}
+          </FormControl>
 
           {/* Payment Required */}
-          <Grid item xs={12}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
-                Is there a fee for your program?
-              </FormLabel>
-              <Controller
-                name="isPaymentRequired"
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup {...field} row>
-                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="no" control={<Radio />} label="No, it's free" />
-                  </RadioGroup>
-                )}
-              />
-            </FormControl>
-          </Grid>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+              Is there a fee for your program?
+            </FormLabel>
+            <Controller
+              name="isPaymentRequired"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup {...field} row>
+                  <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                  <FormControlLabel value="no" control={<Radio />} label="No, it's free" />
+                </RadioGroup>
+              )}
+            />
+          </FormControl>
 
           {/* Currency and Fee - Conditional */}
           {isPaymentRequired === 'yes' && (
-            <>
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+              <Box sx={{ flex: 1 }}>
                 <Controller
                   name="currency"
                   control={control}
@@ -272,9 +268,9 @@ const ProgramDetailsForm = ({
                     </FormControl>
                   )}
                 />
-              </Grid>
+              </Box>
 
-              <Grid item xs={12} md={6}>
+              <Box sx={{ flex: 1 }}>
                 <Controller
                   name="programFee"
                   control={control}
@@ -295,177 +291,174 @@ const ProgramDetailsForm = ({
                     />
                   )}
                 />
-              </Grid>
-            </>
+              </Box>
+            </Box>
           )}
 
-          {/* Registration Start Date & Time */}
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="registrationStartDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="When does registration open?"
-                  minDate={new Date()}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
+          {/* Registration Dates Row */}
+          <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="registrationStartDate"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="When does registration open?"
+                    minDate={new Date()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Box>
 
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="registrationStartTime"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Registration start time"
-                  type="time"
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
-            />
-          </Grid>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="registrationStartTime"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Registration start time"
+                    type="time"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              />
+            </Box>
+          </Box>
 
-          {/* Registration End Date & Time */}
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="registrationEndDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="When does registration close?"
-                  minDate={new Date()}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true
-                    }
-                  }}
-                />
-              )}
-            />
-          </Grid>
+          <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="registrationEndDate"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="When does registration close?"
+                    minDate={new Date()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Box>
 
-          <Grid item xs={12} md={6}>
-            <Controller
-              name="registrationEndTime"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Registration end time"
-                  type="time"
-                  InputLabelProps={{ shrink: true }}
-                />
-              )}
-            />
-          </Grid>
+            <Box sx={{ flex: 1 }}>
+              <Controller
+                name="registrationEndTime"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Registration end time"
+                    type="time"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                )}
+              />
+            </Box>
+          </Box>
 
           {/* Participants Limit Section */}
-          <Grid item xs={12}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
-                Is there a limit on participants?
-              </FormLabel>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Controller
-                  name="hasSeatLimit"
-                  control={control}
-                  render={({ field }) => (
-                    <RadioGroup {...field} row>
-                      <FormControlLabel value="yes" control={<Radio />} label="Yes, limit participants" />
-                      <FormControlLabel value="no" control={<Radio />} label="No, unlimited participants" />
-                    </RadioGroup>
-                  )}
-                />
-                
-                {hasSeatLimit === 'yes' && (
-                  <Controller
-                    name="seatLimit"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type="number"
-                        label="Number of seats"
-                        placeholder="Enter seats"
-                        sx={{ width: 150 }}
-                        inputProps={{ min: 1 }}
-                      />
-                    )}
-                  />
-                )}
-              </Box>
-            </FormControl>
-          </Grid>
-
-          {/* Waitlist Section */}
-          <Grid item xs={12}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
-                Enable waitlist when full?
-              </FormLabel>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Controller
-                  name="hasWaitlist"
-                  control={control}
-                  render={({ field }) => (
-                    <RadioGroup {...field} row>
-                      <FormControlLabel value="yes" control={<Radio />} label="Yes, allow waitlist" />
-                      <FormControlLabel value="no" control={<Radio />} label="No waitlist" />
-                    </RadioGroup>
-                  )}
-                />
-                
-                {hasWaitlist === 'yes' && (
-                  <Controller
-                    name="waitlistTriggerCount"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type="number"
-                        label="Trigger count"
-                        placeholder="Count"
-                        sx={{ width: 150 }}
-                        inputProps={{ min: 1 }}
-                      />
-                    )}
-                  />
-                )}
-              </Box>
-            </FormControl>
-          </Grid>
-
-          {/* Approval Required */}
-          <Grid item xs={12}>
-            <FormControl component="fieldset" fullWidth>
-              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
-                Do you need to approve registrations?
-              </FormLabel>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+              Is there a limit on participants?
+            </FormLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Controller
-                name="approvalRequired"
+                name="hasSeatLimit"
                 control={control}
                 render={({ field }) => (
                   <RadioGroup {...field} row>
-                    <FormControlLabel value="yes" control={<Radio />} label="I'll approve each registration" />
-                    <FormControlLabel value="no" control={<Radio />} label="Auto-approve registrations" />
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes, limit participants" />
+                    <FormControlLabel value="no" control={<Radio />} label="No, unlimited participants" />
                   </RadioGroup>
                 )}
               />
-            </FormControl>
-          </Grid>
-        </Grid>
+              
+              {hasSeatLimit === 'yes' && (
+                <Controller
+                  name="seatLimit"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      label="Number of seats"
+                      placeholder="Enter seats"
+                      sx={{ width: 150 }}
+                      inputProps={{ min: 1 }}
+                    />
+                  )}
+                />
+              )}
+            </Box>
+          </FormControl>
+
+          {/* Waitlist Section */}
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+              Enable waitlist when full?
+            </FormLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Controller
+                name="hasWaitlist"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup {...field} row>
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes, allow waitlist" />
+                    <FormControlLabel value="no" control={<Radio />} label="No waitlist" />
+                  </RadioGroup>
+                )}
+              />
+              
+              {hasWaitlist === 'yes' && (
+                <Controller
+                  name="waitlistTriggerCount"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      label="Trigger count"
+                      placeholder="Count"
+                      sx={{ width: 150 }}
+                      inputProps={{ min: 1 }}
+                    />
+                  )}
+                />
+              )}
+            </Box>
+          </FormControl>
+
+          {/* Approval Required */}
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+              Do you need to approve registrations?
+            </FormLabel>
+            <Controller
+              name="approvalRequired"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup {...field} row>
+                  <FormControlLabel value="yes" control={<Radio />} label="I'll approve each registration" />
+                  <FormControlLabel value="no" control={<Radio />} label="Auto-approve registrations" />
+                </RadioGroup>
+              )}
+            />
+          </FormControl>
+        </Stack>
       </Paper>
     </LocalizationProvider>
   );
