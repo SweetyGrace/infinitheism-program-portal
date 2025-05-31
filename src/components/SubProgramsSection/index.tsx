@@ -1,4 +1,3 @@
-
 import { useRef } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import { Add } from '@mui/icons-material';
@@ -103,25 +102,22 @@ const SubProgramsSection = ({
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {subPrograms.map((subProgram) => (
+          {subPrograms.map((subProgram, index) => (
             <div 
               key={subProgram.id} 
               ref={(el) => (subProgramRefs.current[subProgram.id] = el)}
             >
               <SubProgramCard
                 subProgram={subProgram}
-                uploadedBanner={uploadedBanner}
-                programDescription={programDescription}
-                currencyOptions={currencyOptions}
-                venueOptions={venueOptions}
+                index={index}
                 onSubProgramChange={onSubProgramChange}
                 onSubProgramVenueChange={onSubProgramVenueChange}
                 onSubProgramBannerUpload={onSubProgramBannerUpload}
                 onDeleteSubProgram={onDeleteSubProgram}
                 getCurrencySymbol={getCurrencySymbol}
+                currencyOptions={currencyOptions}
+                venueOptions={venueOptions}
                 isDateWithinProgramRange={isDateWithinProgramRange}
-                startDate={startDate}
-                endDate={endDate}
               />
             </div>
           ))}

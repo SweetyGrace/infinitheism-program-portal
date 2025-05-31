@@ -472,7 +472,7 @@ const AddProgramPage = () => {
         </Box>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
           <DialogTitle>Delete Sub-Program</DialogTitle>
           <DialogContent sx={{ py: 1.5 }}>
             <Typography>Are you sure you want to delete this sub-program? This action cannot be undone.</Typography>
