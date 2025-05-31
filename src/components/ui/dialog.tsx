@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import {
   Dialog as MuiDialog,
@@ -11,7 +10,17 @@ import {
 } from '@mui/material';
 import { X } from "lucide-react";
 
-const Dialog = MuiDialog;
+const Dialog = React.forwardRef<
+  HTMLDivElement,
+  MuiDialogProps & { onOpenChange?: (open: boolean) => void }
+>(({ onOpenChange, ...props }, ref) => (
+  <MuiDialog 
+    ref={ref} 
+    onClose={() => onOpenChange?.(false)}
+    {...props} 
+  />
+));
+Dialog.displayName = "Dialog";
 
 const DialogTrigger = React.forwardRef<
   HTMLButtonElement,

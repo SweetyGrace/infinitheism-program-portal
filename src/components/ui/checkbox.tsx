@@ -14,9 +14,13 @@ const StyledCheckbox = styled(MuiCheckbox)(({ theme }) => ({
 
 const Checkbox = React.forwardRef<
   HTMLButtonElement,
-  CheckboxProps
->(({ ...props }, ref) => (
-  <StyledCheckbox ref={ref} {...props} />
+  CheckboxProps & { onCheckedChange?: (checked: boolean) => void }
+>(({ onCheckedChange, ...props }, ref) => (
+  <StyledCheckbox 
+    ref={ref} 
+    onChange={(e) => onCheckedChange?.(e.target.checked)}
+    {...props} 
+  />
 ));
 Checkbox.displayName = "Checkbox";
 

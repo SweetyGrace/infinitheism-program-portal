@@ -27,9 +27,14 @@ export interface ButtonProps extends Omit<MuiButtonProps, 'size'> {
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, ...props }, ref) => {
+  ({ children, variant = "contained", size = "medium", ...props }, ref) => {
+    // Map variants for compatibility
+    const muiVariant = variant === 'ghost' ? 'text' : 
+                      variant === 'outline' ? 'outlined' : 
+                      variant as 'text' | 'outlined' | 'contained';
+    
     return (
-      <StyledButton ref={ref} {...props}>
+      <StyledButton ref={ref} variant={muiVariant} size={size} {...props}>
         {children}
       </StyledButton>
     )

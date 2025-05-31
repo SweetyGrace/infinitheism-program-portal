@@ -9,7 +9,17 @@ import {
 } from '@mui/material';
 import { ChevronDown } from "lucide-react";
 
-const Select = MuiSelect;
+const Select = React.forwardRef<
+  HTMLDivElement,
+  MuiSelectProps & { onValueChange?: (value: any) => void }
+>(({ onValueChange, ...props }, ref) => (
+  <MuiSelect
+    ref={ref}
+    onChange={(e) => onValueChange?.(e.target.value)}
+    {...props}
+  />
+));
+Select.displayName = "Select";
 
 const SelectGroup = React.forwardRef<
   HTMLDivElement,
@@ -23,10 +33,10 @@ SelectGroup.displayName = "SelectGroup";
 
 const SelectValue = React.forwardRef<
   HTMLSpanElement,
-  React.HTMLAttributes<HTMLSpanElement>
->(({ children, ...props }, ref) => (
+  React.HTMLAttributes<HTMLSpanElement> & { placeholder?: string }
+>(({ children, placeholder, ...props }, ref) => (
   <span ref={ref} {...props}>
-    {children}
+    {children || placeholder}
   </span>
 ));
 SelectValue.displayName = "SelectValue";
@@ -39,6 +49,13 @@ const SelectTrigger = React.forwardRef<
     <MuiSelect
       ref={ref}
       IconComponent={ChevronDown}
+      displayEmpty
+      renderValue={(value) => {
+        if (!value) {
+          return <span style={{ color: '#999' }}>Select an option</span>;
+        }
+        return value;
+      }}
       {...props}
     >
       {children}
