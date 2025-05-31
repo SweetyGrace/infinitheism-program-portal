@@ -370,6 +370,19 @@ const AddProgramPage = () => {
     return date >= startDate && date <= endDate;
   };
 
+  // Create MUI theme
+  const theme = createTheme({
+    palette: {
+      mode: 'light',
+      primary: {
+        main: '#1976d2',
+      },
+      background: {
+        default: '#f5f5f5',
+      },
+    },
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

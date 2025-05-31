@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { 
   Paper, 
   Typography, 
-  Grid, 
+  Grid2 as Grid, 
   TextField, 
   FormControl, 
   FormLabel, 
@@ -89,7 +89,7 @@ const ProgramDetailsForm = ({
         
         <Grid container spacing={3}>
           {/* Program Name */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="programName"
               control={control}
@@ -108,7 +108,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Program Banner Upload */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <FormControl fullWidth>
               <FormLabel sx={{ mb: 1, color: 'text.primary' }}>Upload your program banner</FormLabel>
               <Box
@@ -146,7 +146,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Description */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Controller
               name="description"
               control={control}
@@ -167,7 +167,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Program Start Date */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="startDate"
               control={control}
@@ -189,7 +189,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Program End Date */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="endDate"
               control={control}
@@ -211,7 +211,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Mode of Program */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <FormControl component="fieldset" fullWidth>
               <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
                 How will your program be delivered?
@@ -234,7 +234,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Payment Required */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <FormControl component="fieldset" fullWidth>
               <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
                 Is there a fee for your program?
@@ -255,7 +255,7 @@ const ProgramDetailsForm = ({
           {/* Currency and Fee - Conditional */}
           {isPaymentRequired === 'yes' && (
             <>
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Controller
                   name="currency"
                   control={control}
@@ -274,7 +274,7 @@ const ProgramDetailsForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Controller
                   name="programFee"
                   control={control}
@@ -300,7 +300,7 @@ const ProgramDetailsForm = ({
           )}
 
           {/* Registration Start Date & Time */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="registrationStartDate"
               control={control}
@@ -319,7 +319,7 @@ const ProgramDetailsForm = ({
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="registrationStartTime"
               control={control}
@@ -336,7 +336,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Registration End Date & Time */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="registrationEndDate"
               control={control}
@@ -355,7 +355,7 @@ const ProgramDetailsForm = ({
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Controller
               name="registrationEndTime"
               control={control}
@@ -372,7 +372,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Participants Limit Section */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <FormControl component="fieldset" fullWidth>
               <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
                 Is there a limit on participants?
@@ -410,7 +410,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Waitlist Section */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <FormControl component="fieldset" fullWidth>
               <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
                 Enable waitlist when full?
@@ -448,7 +448,7 @@ const ProgramDetailsForm = ({
           </Grid>
 
           {/* Approval Required */}
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <FormControl component="fieldset" fullWidth>
               <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
                 Do you need to approve registrations?
