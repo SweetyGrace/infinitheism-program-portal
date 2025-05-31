@@ -12,23 +12,31 @@ const TooltipProvider = React.forwardRef<
 ));
 TooltipProvider.displayName = "TooltipProvider";
 
-const Tooltip = MuiTooltip;
+const Tooltip = React.forwardRef<
+  HTMLDivElement,
+  TooltipProps
+>(({ children, ...props }, ref) => (
+  <MuiTooltip ref={ref} {...props}>
+    {children}
+  </MuiTooltip>
+));
+Tooltip.displayName = "Tooltip";
 
 const TooltipTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ children, ...props }, ref) => (
-  <button ref={ref} {...props}>
+  <div ref={ref} {...props}>
     {children}
-  </button>
+  </div>
 ));
 TooltipTrigger.displayName = "TooltipTrigger";
 
 const TooltipContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof MuiTooltip>
+  React.HTMLAttributes<HTMLDivElement>
 >(({ children, ...props }, ref) => (
-  <div ref={ref}>
+  <div ref={ref} {...props}>
     {children}
   </div>
 ));

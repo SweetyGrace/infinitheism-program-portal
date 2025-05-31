@@ -9,6 +9,7 @@ export interface ToastProps {
   action?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  children?: React.ReactNode;
 }
 
 export type ToastActionElement = React.ReactElement;
@@ -26,13 +27,15 @@ ToastProvider.displayName = "ToastProvider";
 const Toast = React.forwardRef<
   HTMLDivElement,
   ToastProps
->(({ children, open, onOpenChange, ...props }, ref) => (
+>(({ children, open, onOpenChange, title, description, ...props }, ref) => (
   <Snackbar 
     open={open} 
     onClose={() => onOpenChange?.(false)}
     autoHideDuration={6000}
   >
     <Alert severity="info">
+      {title && <div>{title}</div>}
+      {description && <div>{description}</div>}
       {children}
     </Alert>
   </Snackbar>

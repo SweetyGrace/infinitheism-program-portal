@@ -22,8 +22,9 @@ const StyledButton = styled(MuiButton)(({ theme, variant, size }) => ({
   }),
 }));
 
-export interface ButtonProps extends Omit<MuiButtonProps, 'size'> {
+export interface ButtonProps extends Omit<MuiButtonProps, 'size' | 'variant'> {
   size?: 'small' | 'medium' | 'large';
+  variant?: 'contained' | 'outlined' | 'text' | 'ghost' | 'outline';
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

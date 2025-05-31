@@ -54,7 +54,7 @@ const SelectTrigger = React.forwardRef<
         if (!value) {
           return <span style={{ color: '#999' }}>Select an option</span>;
         }
-        return value;
+        return String(value);
       }}
       {...props}
     >
