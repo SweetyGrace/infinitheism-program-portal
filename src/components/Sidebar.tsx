@@ -1,6 +1,6 @@
 
-import { Home, Folder, Bell } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Home, Folder } from 'lucide-react';
+import './Sidebar.css';
 
 interface SidebarProps {
   activeTab: string;
@@ -14,29 +14,24 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   ];
 
   return (
-    <div className="w-20 h-full bg-white shadow-lg border-r border-gray-200 flex flex-col items-center py-6">
-      <div className="mb-8">
-        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-sm">i</span>
+    <div className="sidebar">
+      <div className="sidebar-logo">
+        <div className="sidebar-logo-icon">
+          <span className="sidebar-logo-text">i</span>
         </div>
       </div>
       
-      <nav className="flex flex-col space-y-6">
+      <nav className="sidebar-nav">
         {menuItems.map((item) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={cn(
-                "flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors",
-                activeTab === item.id
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-              )}
+              className={`sidebar-nav-item ${activeTab === item.id ? 'active' : ''}`}
             >
               <Icon size={20} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <span className="sidebar-nav-item-text">{item.label}</span>
             </button>
           );
         })}
