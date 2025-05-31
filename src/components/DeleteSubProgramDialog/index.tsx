@@ -7,7 +7,7 @@ interface DeleteSubProgramDialogProps {
   onConfirm: () => void;
 }
 
-const DeleteSubProgramDialog = ({ open, onClose, onConfirm }: DeleteSubProgramDialogProps) => {
+export const DeleteSubProgramDialog = ({ open, onClose, onConfirm }: DeleteSubProgramDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Delete Sub-Program</DialogTitle>
