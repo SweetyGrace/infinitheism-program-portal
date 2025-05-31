@@ -1,19 +1,29 @@
 
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { CalendarIcon, Upload } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import styles from './index.module.css';
+import { 
+  Paper, 
+  Typography, 
+  Grid, 
+  TextField, 
+  FormControl, 
+  FormLabel, 
+  RadioGroup, 
+  FormControlLabel, 
+  Radio, 
+  Select, 
+  MenuItem, 
+  InputLabel, 
+  Box,
+  Button,
+  FormHelperText,
+  InputAdornment
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Upload } from '@mui/icons-material';
 
 const programDetailsSchema = z.object({
   programName: z.string().min(1, "Program name is required"),
@@ -62,535 +72,402 @@ const ProgramDetailsForm = ({
   currencyOptions,
   venueOptions
 }: ProgramDetailsFormProps) => {
-  const modeOfProgram = form.watch('modeOfProgram');
-  const isPaymentRequired = form.watch('isPaymentRequired');
-  const hasSeatLimit = form.watch('hasSeatLimit');
-  const hasWaitlist = form.watch('hasWaitlist');
-  const startDate = form.watch('startDate');
-  const selectedCurrency = form.watch('currency');
+  const { control, watch, formState: { errors } } = form;
+  const modeOfProgram = watch('modeOfProgram');
+  const isPaymentRequired = watch('isPaymentRequired');
+  const hasSeatLimit = watch('hasSeatLimit');
+  const hasWaitlist = watch('hasWaitlist');
+  const startDate = watch('startDate');
+  const selectedCurrency = watch('currency');
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Program Details</h2>
-      </div>
-      
-      <div className={styles.grid}>
-        {/* Program Name */}
-        <FormField
-          control={form.control}
-          name="programName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className={styles.label}>What's your program called?</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter program name" 
-                  className={styles.input}
-                  {...field} 
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Paper elevation={1} sx={{ p: 4, mb: 4, borderRadius: 2 }}>
+        <Typography variant="h5" sx={{ mb: 4, fontWeight: 600, color: 'text.primary' }}>
+          Program Details
+        </Typography>
+        
+        <Grid container spacing={3}>
+          {/* Program Name */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="programName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="What's your program called?"
+                  placeholder="Enter program name"
+                  error={!!errors.programName}
+                  helperText={errors.programName?.message}
+                  variant="outlined"
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              )}
+            />
+          </Grid>
 
-        {/* Program Banner Upload */}
-        <FormItem>
-          <FormLabel className={styles.label}>Upload your program banner</FormLabel>
-          <FormControl>
-            <div className={styles.uploadArea}>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onBannerUpload}
-                className={styles.hiddenInput}
-                id="banner-upload"
-              />
-              <label htmlFor="banner-upload" className={styles.uploadLabel}>
-                <Upload className={styles.uploadIcon} />
-                <p className={styles.uploadText}>
-                  {uploadedBanner ? uploadedBanner.name : "Click to upload or drag and drop"}
-                </p>
-                <p className={styles.uploadSubtext}>PNG, JPG, GIF up to 10MB</p>
-              </label>
-            </div>
-          </FormControl>
-        </FormItem>
+          {/* Program Banner Upload */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <FormLabel sx={{ mb: 1, color: 'text.primary' }}>Upload your program banner</FormLabel>
+              <Box
+                sx={{
+                  border: '2px dashed',
+                  borderColor: 'grey.300',
+                  borderRadius: 2,
+                  p: 4,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    bgcolor: 'primary.50'
+                  }
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onBannerUpload}
+                  style={{ display: 'none' }}
+                  id="banner-upload"
+                />
+                <label htmlFor="banner-upload" style={{ cursor: 'pointer' }}>
+                  <Upload sx={{ fontSize: 40, color: 'grey.400', mb: 2 }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                    {uploadedBanner ? uploadedBanner.name : "Click to upload or drag and drop"}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    PNG, JPG, GIF up to 10MB
+                  </Typography>
+                </label>
+              </Box>
+            </FormControl>
+          </Grid>
 
-        {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>Tell us about your program</FormLabel>
-              <FormControl>
-                <Textarea 
+          {/* Description */}
+          <Grid item xs={12}>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Tell us about your program"
                   placeholder="Describe what makes your program special..."
-                  className={styles.textarea}
-                  {...field} 
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                  variant="outlined"
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              )}
+            />
+          </Grid>
 
-        {/* Program Start Date */}
-        <FormField
-          control={form.control}
-          name="startDate"
-          render={({ field }) => (
-            <FormItem className={styles.dateField}>
-              <FormLabel className={styles.label}>When does your program begin?</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        styles.dateButton,
-                        !field.value && styles.placeholder
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className={styles.calendarIcon} />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className={styles.popoverContent} align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Program Start Date */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="startDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="When does your program begin?"
+                  minDate={new Date()}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.startDate,
+                      helperText: errors.startDate?.message
+                    }
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
-        {/* Program End Date */}
-        <FormField
-          control={form.control}
-          name="endDate"
-          render={({ field }) => (
-            <FormItem className={styles.dateField}>
-              <FormLabel className={styles.label}>When does your program end?</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        styles.dateButton,
-                        !field.value && styles.placeholder
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className={styles.calendarIcon} />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className={styles.popoverContent} align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => startDate && date < startDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Program End Date */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="endDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="When does your program end?"
+                  minDate={startDate || new Date()}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.endDate,
+                      helperText: errors.endDate?.message
+                    }
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
-        {/* Mode of Program */}
-        <FormField
-          control={form.control}
-          name="modeOfProgram"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>How will your program be delivered?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className={styles.radioGroup}
-                >
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="online" id="online" className={styles.radioButton} />
-                    <Label htmlFor="online" className={styles.radioLabel}>Online</Label>
-                  </div>
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="offline" id="offline" className={styles.radioButton} />
-                    <Label htmlFor="offline" className={styles.radioLabel}>In-person</Label>
-                  </div>
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="hybrid" id="hybrid" className={styles.radioButton} />
-                    <Label htmlFor="hybrid" className={styles.radioLabel}>Hybrid</Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Mode of Program */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                How will your program be delivered?
+              </FormLabel>
+              <Controller
+                name="modeOfProgram"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup {...field} row>
+                    <FormControlLabel value="online" control={<Radio />} label="Online" />
+                    <FormControlLabel value="offline" control={<Radio />} label="In-person" />
+                    <FormControlLabel value="hybrid" control={<Radio />} label="Hybrid" />
+                  </RadioGroup>
+                )}
+              />
+              {errors.modeOfProgram && (
+                <FormHelperText error>{errors.modeOfProgram?.message}</FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
 
-        {/* Payment Required */}
-        <FormField
-          control={form.control}
-          name="isPaymentRequired"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>Is there a fee for your program?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className={styles.radioGroup}
-                >
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="yes" id="payment-yes" className={styles.radioButton} />
-                    <Label htmlFor="payment-yes" className={styles.radioLabel}>Yes</Label>
-                  </div>
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="no" id="payment-no" className={styles.radioButton} />
-                    <Label htmlFor="payment-no" className={styles.radioLabel}>No, it's free</Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          {/* Payment Required */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                Is there a fee for your program?
+              </FormLabel>
+              <Controller
+                name="isPaymentRequired"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup {...field} row>
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                    <FormControlLabel value="no" control={<Radio />} label="No, it's free" />
+                  </RadioGroup>
+                )}
+              />
+            </FormControl>
+          </Grid>
 
-        {/* Currency and Fee - Conditional */}
-        <div className={cn(
-          styles.paymentSection,
-          isPaymentRequired === 'yes' ? styles.visible : styles.hidden
-        )}>
-          <FormField
-            control={form.control}
-            name="currency"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className={styles.label}>What currency will you use?</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className={styles.select}>
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {currencyOptions.map((currency) => (
-                      <SelectItem key={currency.value} value={currency.value} className={styles.selectItem}>
-                        {currency.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Currency and Fee - Conditional */}
+          {isPaymentRequired === 'yes' && (
+            <>
+              <Grid item xs={12} md={6}>
+                <Controller
+                  name="currency"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth>
+                      <InputLabel>What currency will you use?</InputLabel>
+                      <Select {...field} label="What currency will you use?">
+                        {currencyOptions.map((currency) => (
+                          <MenuItem key={currency.value} value={currency.value}>
+                            {currency.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
 
-          <FormField
-            control={form.control}
-            name="programFee"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className={styles.label}>What's the program fee?</FormLabel>
-                <FormControl>
-                  <div className={styles.currencyInput}>
-                    <span className={styles.currencySymbol}>
-                      {getCurrencySymbol(selectedCurrency || 'INR')}
-                    </span>
-                    <Input 
-                      placeholder="0.00" 
-                      className={styles.feeInput}
+              <Grid item xs={12} md={6}>
+                <Controller
+                  name="programFee"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="What's the program fee?"
+                      placeholder="0.00"
                       type="number"
-                      {...field} 
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        {/* Registration Start Date & Time */}
-        <FormField
-          control={form.control}
-          name="registrationStartDate"
-          render={({ field }) => (
-            <FormItem className={styles.dateField}>
-              <FormLabel className={styles.label}>When does registration open?</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        styles.dateButton,
-                        !field.value && styles.placeholder
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className={styles.calendarIcon} />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className={styles.popoverContent} align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="registrationStartTime"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className={styles.label}>Registration start time</FormLabel>
-              <FormControl>
-                <Input type="time" className={styles.input} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Registration End Date & Time */}
-        <FormField
-          control={form.control}
-          name="registrationEndDate"
-          render={({ field }) => (
-            <FormItem className={styles.dateField}>
-              <FormLabel className={styles.label}>When does registration close?</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        styles.dateButton,
-                        !field.value && styles.placeholder
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className={styles.calendarIcon} />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className={styles.popoverContent} align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="registrationEndTime"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className={styles.label}>Registration end time</FormLabel>
-              <FormControl>
-                <Input type="time" className={styles.input} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Participants Limit Section */}
-        <FormField
-          control={form.control}
-          name="hasSeatLimit"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>Is there a limit on participants?</FormLabel>
-              <div className={styles.limitSection}>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className={styles.radioGroup}
-                  >
-                    <div className={styles.radioItem}>
-                      <RadioGroupItem value="yes" id="limit-yes" className={styles.radioButton} />
-                      <Label htmlFor="limit-yes" className={styles.radioLabel}>Yes, limit participants</Label>
-                    </div>
-                    <div className={styles.radioItem}>
-                      <RadioGroupItem value="no" id="limit-no" className={styles.radioButton} />
-                      <Label htmlFor="limit-no" className={styles.radioLabel}>No, unlimited participants</Label>
-                    </div>
-                  </RadioGroup>
-                </FormControl>
-
-                <div className={cn(
-                  styles.conditionalField,
-                  hasSeatLimit === 'yes' ? styles.visible : styles.hidden
-                )}>
-                  {hasSeatLimit === 'yes' && (
-                    <FormField
-                      control={form.control}
-                      name="seatLimit"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className={styles.seatLimitField}>
-                              <Label className={styles.smallLabel}>Number of seats</Label>
-                              <Input 
-                                type="number" 
-                                placeholder="Enter seats"
-                                min="1"
-                                className={styles.smallInput}
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {getCurrencySymbol(selectedCurrency || 'INR')}
+                          </InputAdornment>
+                        )
+                      }}
                     />
                   )}
-                </div>
-              </div>
-              <FormMessage />
-            </FormItem>
+                />
+              </Grid>
+            </>
           )}
-        />
 
-        {/* Waitlist Section */}
-        <FormField
-          control={form.control}
-          name="hasWaitlist"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>Enable waitlist when full?</FormLabel>
-              <div className={styles.limitSection}>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className={styles.radioGroup}
-                  >
-                    <div className={styles.radioItem}>
-                      <RadioGroupItem value="yes" id="waitlist-yes" className={styles.radioButton} />
-                      <Label htmlFor="waitlist-yes" className={styles.radioLabel}>Yes, allow waitlist</Label>
-                    </div>
-                    <div className={styles.radioItem}>
-                      <RadioGroupItem value="no" id="waitlist-no" className={styles.radioButton} />
-                      <Label htmlFor="waitlist-no" className={styles.radioLabel}>No waitlist</Label>
-                    </div>
-                  </RadioGroup>
-                </FormControl>
+          {/* Registration Start Date & Time */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="registrationStartDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="When does registration open?"
+                  minDate={new Date()}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true
+                    }
+                  }}
+                />
+              )}
+            />
+          </Grid>
 
-                <div className={cn(
-                  styles.conditionalField,
-                  hasWaitlist === 'yes' ? styles.visible : styles.hidden
-                )}>
-                  {hasWaitlist === 'yes' && (
-                    <FormField
-                      control={form.control}
-                      name="waitlistTriggerCount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className={styles.seatLimitField}>
-                              <Label className={styles.smallLabel}>Trigger count</Label>
-                              <Input 
-                                type="number" 
-                                placeholder="Count"
-                                min="1"
-                                className={styles.smallInput}
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="registrationStartTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Registration start time"
+                  type="time"
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Registration End Date & Time */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="registrationEndDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="When does registration close?"
+                  minDate={new Date()}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true
+                    }
+                  }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="registrationEndTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Registration end time"
+                  type="time"
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Participants Limit Section */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                Is there a limit on participants?
+              </FormLabel>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Controller
+                  name="hasSeatLimit"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup {...field} row>
+                      <FormControlLabel value="yes" control={<Radio />} label="Yes, limit participants" />
+                      <FormControlLabel value="no" control={<Radio />} label="No, unlimited participants" />
+                    </RadioGroup>
                   )}
-                </div>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                />
+                
+                {hasSeatLimit === 'yes' && (
+                  <Controller
+                    name="seatLimit"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="number"
+                        label="Number of seats"
+                        placeholder="Enter seats"
+                        sx={{ width: 150 }}
+                        inputProps={{ min: 1 }}
+                      />
+                    )}
+                  />
+                )}
+              </Box>
+            </FormControl>
+          </Grid>
 
-        {/* Approval Required */}
-        <FormField
-          control={form.control}
-          name="approvalRequired"
-          render={({ field }) => (
-            <FormItem className={styles.fullWidth}>
-              <FormLabel className={styles.label}>Do you need to approve registrations?</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className={styles.radioGroup}
-                >
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="yes" id="approval-yes" className={styles.radioButton} />
-                    <Label htmlFor="approval-yes" className={styles.radioLabel}>I'll approve each registration</Label>
-                  </div>
-                  <div className={styles.radioItem}>
-                    <RadioGroupItem value="no" id="approval-no" className={styles.radioButton} />
-                    <Label htmlFor="approval-no" className={styles.radioLabel}>Auto-approve registrations</Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-    </div>
+          {/* Waitlist Section */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                Enable waitlist when full?
+              </FormLabel>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Controller
+                  name="hasWaitlist"
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup {...field} row>
+                      <FormControlLabel value="yes" control={<Radio />} label="Yes, allow waitlist" />
+                      <FormControlLabel value="no" control={<Radio />} label="No waitlist" />
+                    </RadioGroup>
+                  )}
+                />
+                
+                {hasWaitlist === 'yes' && (
+                  <Controller
+                    name="waitlistTriggerCount"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="number"
+                        label="Trigger count"
+                        placeholder="Count"
+                        sx={{ width: 150 }}
+                        inputProps={{ min: 1 }}
+                      />
+                    )}
+                  />
+                )}
+              </Box>
+            </FormControl>
+          </Grid>
+
+          {/* Approval Required */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                Do you need to approve registrations?
+              </FormLabel>
+              <Controller
+                name="approvalRequired"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup {...field} row>
+                    <FormControlLabel value="yes" control={<Radio />} label="I'll approve each registration" />
+                    <FormControlLabel value="no" control={<Radio />} label="Auto-approve registrations" />
+                  </RadioGroup>
+                )}
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
+    </LocalizationProvider>
   );
 };
 

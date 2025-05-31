@@ -1,9 +1,8 @@
 
 import { useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Paper, Typography, Box, Button } from '@mui/material';
+import { Add } from '@mui/icons-material';
 import SubProgramCard from '../SubProgramCard';
-import styles from './index.module.css';
 
 interface SubProgram {
   id: string;
@@ -69,32 +68,41 @@ const SubProgramsSection = ({
   return (
     <>
       {/* Sub-Program Configuration Section */}
-      <div className={styles.configurationSection}>
-        <div className={styles.configurationContent}>
-          <h2 className={styles.configurationTitle}>Sub-Program Configuration</h2>
-          <p className={styles.configurationDescription}>
+      <Box sx={{ textAlign: 'center', py: 4, mb: 4 }}>
+        <Box sx={{ maxWidth: '32rem', mx: 'auto' }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
+            Sub-Program Configuration
+          </Typography>
+          <Typography variant="h6" sx={{ color: 'text.secondary', lineHeight: 1.75 }}>
             Configure individual sub-programs with their specific schedules, delivery modes, and requirements. 
             Each sub-program inherits settings from the main program but can be customized as needed.
-          </p>
-        </div>
-      </div>
+          </Typography>
+        </Box>
+      </Box>
 
       {/* Sub-Program Details Section */}
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Sub-Program Details</h2>
+      <Paper elevation={1} sx={{ p: 4, borderRadius: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+            Sub-Program Details
+          </Typography>
           <Button
-            type="button"
-            variant="outline"
+            variant="outlined"
+            startIcon={<Add />}
             onClick={onAddSubProgram}
-            className={styles.addButton}
+            sx={{ 
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'primary.50',
+                borderColor: 'primary.main'
+              }
+            }}
           >
-            <Plus size={16} />
             Add Sub-Program
           </Button>
-        </div>
+        </Box>
 
-        <div className={styles.subProgramsList}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {subPrograms.map((subProgram) => (
             <div 
               key={subProgram.id} 
@@ -117,8 +125,8 @@ const SubProgramsSection = ({
               />
             </div>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Paper>
     </>
   );
 };

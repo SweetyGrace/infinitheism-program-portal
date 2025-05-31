@@ -3,16 +3,25 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { addMonths } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Form } from '@/components/ui/form';
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CssBaseline,
+  ThemeProvider,
+  createTheme
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import PageHeader from '../components/PageHeader';
 import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import ProgramDetailsForm from '../components/ProgramDetailsForm';
 import SubProgramsSection from '../components/SubProgramsSection';
-import styles from './AddProgramPage.module.css';
 
 // Form schema for validation
 const subProgramSchema = z.object({
@@ -362,106 +371,110 @@ const AddProgramPage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      {/* Sticky Sidebar */}
-      <div className={styles.sidebarContainer}>
-        <div className={styles.sidebar}>
-          <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-      </div>
-      
-      {/* Main content area */}
-      <div className={styles.mainContent}>
-        {/* Fixed Header */}
-        <PageHeader />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+        {/* Sticky Sidebar */}
+        <Box sx={{ width: '5rem', flexShrink: 0 }}>
+          <Box sx={{ position: 'fixed', left: 0, top: 0, height: '100%' }}>
+            <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+          </Box>
+        </Box>
+        
+        {/* Main content area */}
+        <Box sx={{ flex: 1, position: 'relative' }}>
+          {/* Fixed Header */}
+          <PageHeader />
 
-        {/* Banner */}
-        <div className={styles.bannerContainer}>
-          <div className={styles.banner} style={{backgroundImage: 'url(/lovable-uploads/8f140035-f50b-40c4-b9b0-ac365bbd6cc7.png)'}}>
-          </div>
-        </div>
+          {/* Banner */}
+          <Box sx={{ pt: '5rem' }}>
+            <Box 
+              sx={{ 
+                width: '100%', 
+                height: '12rem', 
+                backgroundImage: 'url(/lovable-uploads/8f140035-f50b-40c4-b9b0-ac365bbd6cc7.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }} 
+            />
+          </Box>
 
-        {/* Main Content */}
-        <div className={styles.content}>
-          <div className={styles.maxWidth}>
+          {/* Main Content */}
+          <Container maxWidth="xl" sx={{ py: 4 }}>
             {/* Breadcrumb */}
             <BreadcrumbNavigation programName={programName} />
 
             {/* Personalization Message */}
-            <div className={styles.pageTitle}>
-              <h1 className={styles.titleText}>Add a HDB/MSD program</h1>
-            </div>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" sx={{ color: 'text.primary' }}>
+                Add a HDB/MSD program
+              </Typography>
+            </Box>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSave)} className={styles.form}>
-                {/* Program Details Section */}
-                <ProgramDetailsForm
-                  form={form}
-                  uploadedBanner={uploadedBanner}
-                  showCustomVenue={showCustomVenue}
-                  onBannerUpload={handleBannerUpload}
-                  onVenueChange={handleVenueChange}
-                  getCurrencySymbol={getCurrencySymbol}
-                  currencyOptions={currencyOptions}
-                  venueOptions={venueOptions}
-                />
+            <Box component="form" onSubmit={form.handleSubmit(handleSave)} sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {/* Program Details Section */}
+              <ProgramDetailsForm
+                form={form}
+                uploadedBanner={uploadedBanner}
+                showCustomVenue={showCustomVenue}
+                onBannerUpload={handleBannerUpload}
+                onVenueChange={handleVenueChange}
+                getCurrencySymbol={getCurrencySymbol}
+                currencyOptions={currencyOptions}
+                venueOptions={venueOptions}
+              />
 
-                {/* Sub-Programs Section */}
-                <SubProgramsSection
-                  subPrograms={subPrograms}
-                  uploadedBanner={uploadedBanner}
-                  programDescription={programDescription}
-                  selectedCurrency={selectedCurrency}
-                  isPaymentRequired={isPaymentRequired}
-                  modeOfProgram={modeOfProgram}
-                  startDate={startDate}
-                  endDate={endDate}
-                  currencyOptions={currencyOptions}
-                  venueOptions={venueOptions}
-                  onAddSubProgram={handleAddSubProgram}
-                  onSubProgramChange={handleSubProgramChange}
-                  onSubProgramVenueChange={handleSubProgramVenueChange}
-                  onSubProgramBannerUpload={handleSubProgramBannerUpload}
-                  onDeleteSubProgram={handleDeleteSubProgram}
-                  getCurrencySymbol={getCurrencySymbol}
-                  isDateWithinProgramRange={isDateWithinProgramRange}
-                />
+              {/* Sub-Programs Section */}
+              <SubProgramsSection
+                subPrograms={subPrograms}
+                uploadedBanner={uploadedBanner}
+                programDescription={programDescription}
+                selectedCurrency={selectedCurrency}
+                isPaymentRequired={isPaymentRequired}
+                modeOfProgram={modeOfProgram}
+                startDate={startDate}
+                endDate={endDate}
+                currencyOptions={currencyOptions}
+                venueOptions={venueOptions}
+                onAddSubProgram={handleAddSubProgram}
+                onSubProgramChange={handleSubProgramChange}
+                onSubProgramVenueChange={handleSubProgramVenueChange}
+                onSubProgramBannerUpload={handleSubProgramBannerUpload}
+                onDeleteSubProgram={handleDeleteSubProgram}
+                getCurrencySymbol={getCurrencySymbol}
+                isDateWithinProgramRange={isDateWithinProgramRange}
+              />
 
-                {/* Footer Actions */}
-                <div className={styles.footer}>
-                  <Button type="button" variant="outline" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    Save Program
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </div>
+              {/* Footer Actions */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 6, mb: 4 }}>
+                <Button variant="outlined" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="contained">
+                  Save Program
+                </Button>
+              </Box>
+            </Box>
+          </Container>
+        </Box>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Sub-Program</DialogTitle>
-          </DialogHeader>
-          <div className={styles.dialogContent}>
-            <p>Are you sure you want to delete this sub-program? This action cannot be undone.</p>
-          </div>
-          <div className={styles.dialogActions}>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogTitle>Delete Sub-Program</DialogTitle>
+          <DialogContent sx={{ py: 1.5 }}>
+            <Typography>Are you sure you want to delete this sub-program? This action cannot be undone.</Typography>
+          </DialogContent>
+          <DialogActions sx={{ gap: 1.5, p: 3 }}>
+            <Button variant="outlined" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmDeleteSubProgram}>
+            <Button variant="contained" color="error" onClick={confirmDeleteSubProgram}>
               Delete
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </ThemeProvider>
   );
 };
 

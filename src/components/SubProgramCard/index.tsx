@@ -1,16 +1,29 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Calendar } from '@/components/ui/calendar';
-import { Upload, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import styles from './index.module.css';
+import { 
+  Paper, 
+  Typography, 
+  Grid, 
+  TextField, 
+  FormControl, 
+  FormLabel, 
+  RadioGroup, 
+  FormControlLabel, 
+  Radio, 
+  Select, 
+  MenuItem, 
+  InputLabel, 
+  Box,
+  Button,
+  Chip,
+  InputAdornment,
+  Collapse
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Upload, Delete } from '@mui/icons-material';
 
 interface SubProgram {
   id: string;
@@ -63,285 +76,331 @@ const SubProgramCard = ({
   startDate,
   endDate
 }: SubProgramCardProps) => {
-  const getHighlightClasses = () => {
+  const getHighlightSx = () => {
     if (!subProgram.isHighlighted) {
-      return styles.container;
+      return {};
     }
 
     switch (subProgram.highlightPhase) {
       case 'fade-in':
-        return `${styles.container} ${styles.highlighted} ${styles.fadeIn}`;
+        return {
+          transform: 'scale(1.02)',
+          boxShadow: 3,
+          border: '2px solid',
+          borderColor: 'primary.main',
+          transition: 'all 0.2s ease-in-out',
+          opacity: 0.8
+        };
       case 'visible':
-        return `${styles.container} ${styles.highlighted} ${styles.visible}`;
+        return {
+          transform: 'scale(1.02)',
+          boxShadow: 3,
+          border: '2px solid',
+          borderColor: 'primary.main',
+          transition: 'all 0.2s ease-in-out',
+          opacity: 1
+        };
       case 'fade-out':
-        return `${styles.container} ${styles.highlighted} ${styles.fadeOut}`;
+        return {
+          transform: 'scale(1)',
+          boxShadow: 1,
+          border: '1px solid',
+          borderColor: 'grey.200',
+          transition: 'all 0.4s ease-in-out',
+          opacity: 0.9
+        };
       default:
-        return `${styles.container} ${styles.highlighted}`;
+        return {
+          border: '2px solid',
+          borderColor: 'primary.main',
+          boxShadow: 3
+        };
     }
   };
 
   return (
-    <div className={getHighlightClasses()}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{subProgram.title}</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onDeleteSubProgram(subProgram.id)}
-          className={styles.deleteButton}
-        >
-          <Trash2 size={14} />
-          Delete
-        </Button>
-      </div>
-      
-      <div className={styles.grid}>
-        {/* Sub-Program Title */}
-        <div className={styles.field}>
-          <Label className={styles.label}>Sub-program title</Label>
-          <Input
-            value={subProgram.title}
-            onChange={(e) => onSubProgramChange(subProgram.id, 'title', e.target.value)}
-            placeholder="Enter sub-program title"
-            className={styles.input}
-          />
-        </div>
-
-        {/* Sub-Program Banner Upload */}
-        <div className={styles.field}>
-          <Label className={styles.label}>Upload sub-program banner</Label>
-          <div className={styles.uploadArea}>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => onSubProgramBannerUpload(subProgram.id, e.target.files?.[0] || null)}
-              className={styles.hiddenInput}
-              id={`banner-upload-${subProgram.id}`}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          p: 4, 
+          borderRadius: 2,
+          ...getHighlightSx()
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+            {subProgram.title}
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<Delete />}
+            onClick={() => onDeleteSubProgram(subProgram.id)}
+            color="error"
+          >
+            Delete
+          </Button>
+        </Box>
+        
+        <Grid container spacing={3}>
+          {/* Sub-Program Title */}
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Sub-program title"
+              value={subProgram.title}
+              onChange={(e) => onSubProgramChange(subProgram.id, 'title', e.target.value)}
+              placeholder="Enter sub-program title"
+              variant="outlined"
             />
-            <label htmlFor={`banner-upload-${subProgram.id}`} className={styles.uploadLabel}>
-              <Upload className={styles.uploadIcon} />
-              <p className={styles.uploadText}>
-                {subProgram.banner ? subProgram.banner.name : (uploadedBanner ? `Using: ${uploadedBanner.name}` : "Click to upload")}
-              </p>
-              <p className={styles.uploadSubtext}>PNG, JPG, GIF up to 10MB</p>
-            </label>
-          </div>
-        </div>
+          </Grid>
 
-        {/* Sub-Program Description */}
-        <div className={`${styles.field} ${styles.fullWidth}`}>
-          <Label className={styles.label}>Tell us about this sub-program</Label>
-          <Textarea 
-            value={subProgram.description}
-            onChange={(e) => onSubProgramChange(subProgram.id, 'description', e.target.value)}
-            placeholder={programDescription ? `Pre-filled: ${programDescription.slice(0, 50)}...` : "Describe this sub-program..."}
-            className={styles.textarea}
-          />
-        </div>
-
-        {/* Sub-Program Start Date */}
-        <div className={styles.dateField}>
-          <Label className={styles.label}>Sub-program start date</Label>
-          <Calendar
-            mode="single"
-            selected={subProgram.startDate || undefined}
-            onSelect={(date) => onSubProgramChange(subProgram.id, 'startDate', date)}
-            disabled={(date) => !isDateWithinProgramRange(date)}
-            className={styles.calendar}
-          />
-          {startDate && endDate && (
-            <p className={styles.dateHint}>Must be between {format(startDate, "PPP")} and {format(endDate, "PPP")}</p>
-          )}
-        </div>
-
-        {/* Sub-Program End Date */}
-        <div className={styles.dateField}>
-          <Label className={styles.label}>Sub-program end date</Label>
-          <Calendar
-            mode="single"
-            selected={subProgram.endDate || undefined}
-            onSelect={(date) => onSubProgramChange(subProgram.id, 'endDate', date)}
-            disabled={(date) => 
-              !isDateWithinProgramRange(date) || 
-              (subProgram.startDate && date < subProgram.startDate)
-            }
-            className={styles.calendar}
-          />
-        </div>
-
-        {/* Mode of Sub-Program */}
-        <div className={`${styles.field} ${styles.fullWidth}`}>
-          <Label className={styles.label}>How will this sub-program be delivered?</Label>
-          <RadioGroup
-            value={subProgram.modeOfProgram}
-            onValueChange={(value) => onSubProgramChange(subProgram.id, 'modeOfProgram', value as 'online' | 'offline' | 'hybrid')}
-            className={styles.radioGroup}
-          >
-            <div className={styles.radioItem}>
-              <RadioGroupItem value="online" id={`online-${subProgram.id}`} className={styles.radioButton} />
-              <Label htmlFor={`online-${subProgram.id}`} className={styles.radioLabel}>Online</Label>
-            </div>
-            <div className={styles.radioItem}>
-              <RadioGroupItem value="offline" id={`offline-${subProgram.id}`} className={styles.radioButton} />
-              <Label htmlFor={`offline-${subProgram.id}`} className={styles.radioLabel}>In-person</Label>
-            </div>
-            <div className={styles.radioItem}>
-              <RadioGroupItem value="hybrid" id={`hybrid-${subProgram.id}`} className={styles.radioButton} />
-              <Label htmlFor={`hybrid-${subProgram.id}`} className={styles.radioLabel}>Hybrid</Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        {/* Conditional Fields - Venue Address */}
-        <div className={cn(
-          styles.venueSection,
-          (subProgram.modeOfProgram === 'offline' || subProgram.modeOfProgram === 'hybrid') 
-            ? styles.visible : styles.hidden
-        )}>
-          <div className={styles.venueFields}>
-            <div className={styles.field}>
-              <Label className={styles.label}>Where will this sub-program take place?</Label>
-              <Select onValueChange={(value) => onSubProgramVenueChange(subProgram.id, [...subProgram.venueAddress, value])}>
-                <SelectTrigger className={styles.select}>
-                  <SelectValue placeholder="Select venue(s)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {venueOptions.map((venue) => (
-                    <SelectItem key={venue} value={venue} className={styles.selectItem}>
-                      {venue}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {subProgram.venueAddress && subProgram.venueAddress.length > 0 && (
-                <div className={styles.venueTags}>
-                  {subProgram.venueAddress.map((venue, index) => (
-                    <span key={index} className={styles.venueTag}>
-                      {venue}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Custom Venue Input */}
-            <div className={cn(
-              styles.customVenueField,
-              subProgram.showCustomVenue ? styles.visible : styles.hidden
-            )}>
-              <div className={styles.field}>
-                <Label className={styles.label}>Add your custom venue</Label>
-                <Input 
-                  value={subProgram.customVenue}
-                  onChange={(e) => onSubProgramChange(subProgram.id, 'customVenue', e.target.value)}
-                  placeholder="Enter venue address" 
-                  className={styles.input}
+          {/* Sub-Program Banner Upload */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <FormLabel sx={{ mb: 1, color: 'text.primary' }}>Upload sub-program banner</FormLabel>
+              <Box
+                sx={{
+                  border: '2px dashed',
+                  borderColor: 'grey.300',
+                  borderRadius: 2,
+                  p: 3,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    bgcolor: 'primary.50'
+                  }
+                }}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onSubProgramBannerUpload(subProgram.id, e.target.files?.[0] || null)}
+                  style={{ display: 'none' }}
+                  id={`banner-upload-${subProgram.id}`}
                 />
-              </div>
-            </div>
+                <label htmlFor={`banner-upload-${subProgram.id}`} style={{ cursor: 'pointer' }}>
+                  <Upload sx={{ fontSize: 32, color: 'grey.400', mb: 1 }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                    {subProgram.banner ? subProgram.banner.name : (uploadedBanner ? `Using: ${uploadedBanner.name}` : "Click to upload")}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    PNG, JPG, GIF up to 10MB
+                  </Typography>
+                </label>
+              </Box>
+            </FormControl>
+          </Grid>
 
-            {/* Travel Required */}
-            <div className={styles.field}>
-              <Label className={styles.label}>Will participants need to travel?</Label>
+          {/* Sub-Program Description */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Tell us about this sub-program"
+              value={subProgram.description}
+              onChange={(e) => onSubProgramChange(subProgram.id, 'description', e.target.value)}
+              placeholder={programDescription ? `Pre-filled: ${programDescription.slice(0, 50)}...` : "Describe this sub-program..."}
+              variant="outlined"
+            />
+          </Grid>
+
+          {/* Sub-Program Start Date */}
+          <Grid item xs={12} md={6}>
+            <DatePicker
+              label="Sub-program start date"
+              value={subProgram.startDate}
+              onChange={(date) => onSubProgramChange(subProgram.id, 'startDate', date)}
+              shouldDisableDate={(date) => !isDateWithinProgramRange(date)}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  helperText: startDate && endDate ? `Must be between ${format(startDate, "PPP")} and ${format(endDate, "PPP")}` : undefined
+                }
+              }}
+            />
+          </Grid>
+
+          {/* Sub-Program End Date */}
+          <Grid item xs={12} md={6}>
+            <DatePicker
+              label="Sub-program end date"
+              value={subProgram.endDate}
+              onChange={(date) => onSubProgramChange(subProgram.id, 'endDate', date)}
+              shouldDisableDate={(date) => 
+                !isDateWithinProgramRange(date) || 
+                (subProgram.startDate && date < subProgram.startDate)
+              }
+              slotProps={{
+                textField: {
+                  fullWidth: true
+                }
+              }}
+            />
+          </Grid>
+
+          {/* Mode of Sub-Program */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                How will this sub-program be delivered?
+              </FormLabel>
               <RadioGroup
-                value={subProgram.isTravelRequired}
-                onValueChange={(value) => onSubProgramChange(subProgram.id, 'isTravelRequired', value as 'yes' | 'no')}
-                className={styles.radioGroup}
+                value={subProgram.modeOfProgram}
+                onChange={(e) => onSubProgramChange(subProgram.id, 'modeOfProgram', e.target.value as 'online' | 'offline' | 'hybrid')}
+                row
               >
-                <div className={styles.radioItem}>
-                  <RadioGroupItem value="yes" id={`travel-yes-${subProgram.id}`} className={styles.radioButton} />
-                  <Label htmlFor={`travel-yes-${subProgram.id}`} className={styles.radioLabel}>Yes</Label>
-                </div>
-                <div className={styles.radioItem}>
-                  <RadioGroupItem value="no" id={`travel-no-${subProgram.id}`} className={styles.radioButton} />
-                  <Label htmlFor={`travel-no-${subProgram.id}`} className={styles.radioLabel}>No</Label>
-                </div>
+                <FormControlLabel value="online" control={<Radio />} label="Online" />
+                <FormControlLabel value="offline" control={<Radio />} label="In-person" />
+                <FormControlLabel value="hybrid" control={<Radio />} label="Hybrid" />
               </RadioGroup>
-            </div>
+            </FormControl>
+          </Grid>
 
-            {/* Residential */}
-            <div className={styles.field}>
-              <Label className={styles.label}>Is this a residential sub-program?</Label>
+          {/* Conditional Fields - Venue Address */}
+          <Collapse in={subProgram.modeOfProgram === 'offline' || subProgram.modeOfProgram === 'hybrid'}>
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Where will this sub-program take place?</InputLabel>
+                  <Select
+                    value=""
+                    onChange={(e) => onSubProgramVenueChange(subProgram.id, [...subProgram.venueAddress, e.target.value])}
+                    label="Where will this sub-program take place?"
+                  >
+                    {venueOptions.map((venue) => (
+                      <MenuItem key={venue} value={venue}>
+                        {venue}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {subProgram.venueAddress && subProgram.venueAddress.length > 0 && (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                    {subProgram.venueAddress.map((venue, index) => (
+                      <Chip
+                        key={index}
+                        label={venue}
+                        variant="outlined"
+                        size="small"
+                      />
+                    ))}
+                  </Box>
+                )}
+              </Grid>
+
+              {/* Custom Venue Input */}
+              <Collapse in={subProgram.showCustomVenue}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Add your custom venue"
+                    value={subProgram.customVenue}
+                    onChange={(e) => onSubProgramChange(subProgram.id, 'customVenue', e.target.value)}
+                    placeholder="Enter venue address"
+                    variant="outlined"
+                  />
+                </Grid>
+              </Collapse>
+
+              {/* Travel Required */}
+              <Grid item xs={12} md={6}>
+                <FormControl component="fieldset" fullWidth>
+                  <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                    Will participants need to travel?
+                  </FormLabel>
+                  <RadioGroup
+                    value={subProgram.isTravelRequired}
+                    onChange={(e) => onSubProgramChange(subProgram.id, 'isTravelRequired', e.target.value as 'yes' | 'no')}
+                    row
+                  >
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+
+              {/* Residential */}
+              <Grid item xs={12} md={6}>
+                <FormControl component="fieldset" fullWidth>
+                  <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                    Is this a residential sub-program?
+                  </FormLabel>
+                  <RadioGroup
+                    value={subProgram.isResidential}
+                    onChange={(e) => onSubProgramChange(subProgram.id, 'isResidential', e.target.value as 'yes' | 'no')}
+                    row
+                  >
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Collapse>
+
+          {/* Payment Required */}
+          <Grid item xs={12}>
+            <FormControl component="fieldset" fullWidth>
+              <FormLabel component="legend" sx={{ color: 'text.primary', mb: 1 }}>
+                Is there a fee for this sub-program?
+              </FormLabel>
               <RadioGroup
-                value={subProgram.isResidential}
-                onValueChange={(value) => onSubProgramChange(subProgram.id, 'isResidential', value as 'yes' | 'no')}
-                className={styles.radioGroup}
+                value={subProgram.isPaymentRequired}
+                onChange={(e) => onSubProgramChange(subProgram.id, 'isPaymentRequired', e.target.value as 'yes' | 'no')}
+                row
               >
-                <div className={styles.radioItem}>
-                  <RadioGroupItem value="yes" id={`residential-yes-${subProgram.id}`} className={styles.radioButton} />
-                  <Label htmlFor={`residential-yes-${subProgram.id}`} className={styles.radioLabel}>Yes</Label>
-                </div>
-                <div className={styles.radioItem}>
-                  <RadioGroupItem value="no" id={`residential-no-${subProgram.id}`} className={styles.radioButton} />
-                  <Label htmlFor={`residential-no-${subProgram.id}`} className={styles.radioLabel}>No</Label>
-                </div>
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No, it's free" />
               </RadioGroup>
-            </div>
-          </div>
-        </div>
+            </FormControl>
+          </Grid>
 
-        {/* Payment Required */}
-        <div className={`${styles.field} ${styles.fullWidth}`}>
-          <Label className={styles.label}>Is there a fee for this sub-program?</Label>
-          <RadioGroup
-            value={subProgram.isPaymentRequired}
-            onValueChange={(value) => onSubProgramChange(subProgram.id, 'isPaymentRequired', value as 'yes' | 'no')}
-            className={styles.radioGroup}
-          >
-            <div className={styles.radioItem}>
-              <RadioGroupItem value="yes" id={`payment-yes-${subProgram.id}`} className={styles.radioButton} />
-              <Label htmlFor={`payment-yes-${subProgram.id}`} className={styles.radioLabel}>Yes</Label>
-            </div>
-            <div className={styles.radioItem}>
-              <RadioGroupItem value="no" id={`payment-no-${subProgram.id}`} className={styles.radioButton} />
-              <Label htmlFor={`payment-no-${subProgram.id}`} className={styles.radioLabel}>No, it's free</Label>
-            </div>
-          </RadioGroup>
-        </div>
+          {/* Currency and Fee - Conditional */}
+          <Collapse in={subProgram.isPaymentRequired === 'yes'}>
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel>What currency will you use?</InputLabel>
+                  <Select
+                    value={subProgram.currency}
+                    onChange={(e) => onSubProgramChange(subProgram.id, 'currency', e.target.value)}
+                    label="What currency will you use?"
+                  >
+                    {currencyOptions.map((currency) => (
+                      <MenuItem key={currency.value} value={currency.value}>
+                        {currency.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-        {/* Currency and Fee - Conditional */}
-        <div className={cn(
-          styles.paymentSection,
-          subProgram.isPaymentRequired === 'yes' ? styles.visible : styles.hidden
-        )}>
-          <div className={styles.field}>
-            <Label className={styles.label}>What currency will you use?</Label>
-            <Select 
-              value={subProgram.currency} 
-              onValueChange={(value) => onSubProgramChange(subProgram.id, 'currency', value)}
-            >
-              <SelectTrigger className={styles.select}>
-                <SelectValue placeholder="Select currency" />
-              </SelectTrigger>
-              <SelectContent>
-                {currencyOptions.map((currency) => (
-                  <SelectItem key={currency.value} value={currency.value} className={styles.selectItem}>
-                    {currency.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className={styles.field}>
-            <Label className={styles.label}>What's the sub-program fee?</Label>
-            <div className={styles.currencyInput}>
-              <span className={styles.currencySymbol}>
-                {getCurrencySymbol(subProgram.currency || 'INR')}
-              </span>
-              <Input 
-                value={subProgram.programFee}
-                onChange={(e) => onSubProgramChange(subProgram.id, 'programFee', e.target.value)}
-                placeholder="0.00" 
-                className={styles.feeInput}
-                type="number"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="What's the sub-program fee?"
+                  value={subProgram.programFee}
+                  onChange={(e) => onSubProgramChange(subProgram.id, 'programFee', e.target.value)}
+                  placeholder="0.00"
+                  type="number"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {getCurrencySymbol(subProgram.currency || 'INR')}
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Collapse>
+        </Grid>
+      </Paper>
+    </LocalizationProvider>
   );
 };
 

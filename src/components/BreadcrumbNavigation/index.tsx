@@ -1,6 +1,6 @@
 
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import styles from './index.module.css';
+import { Breadcrumbs, Link, Typography, Box } from '@mui/material';
+import { NavigateNext } from '@mui/icons-material';
 
 interface BreadcrumbNavigationProps {
   programName: string;
@@ -8,23 +8,20 @@ interface BreadcrumbNavigationProps {
 
 const BreadcrumbNavigation = ({ programName }: BreadcrumbNavigationProps) => {
   return (
-    <div className={styles.container}>
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Programs</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/choose-program">Add new program</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{programName}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-    </div>
+    <Box sx={{ mb: 3 }}>
+      <Breadcrumbs 
+        separator={<NavigateNext fontSize="small" />}
+        sx={{ color: 'text.secondary' }}
+      >
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+        <Link underline="hover" color="inherit" href="/choose-program">
+          Choose Program
+        </Link>
+        <Typography color="text.primary">{programName}</Typography>
+      </Breadcrumbs>
+    </Box>
   );
 };
 
