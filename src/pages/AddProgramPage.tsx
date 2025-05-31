@@ -10,7 +10,7 @@ import BreadcrumbNavigation from '../components/BreadcrumbNavigation';
 import ProgramDetailsForm from '../components/ProgramDetailsForm';
 import SubProgramsSection from '../components/SubProgramsSection';
 import ProgramLayout from '../components/ProgramLayout';
-import DeleteSubProgramDialog from '../components/DeleteSubProgramDialog';
+import { DeleteSubProgramDialog } from '../components/DeleteSubProgramDialog';
 import { programDetailsSchema } from '../schemas/programSchemas';
 import { currencyOptions, venueOptions, getCurrencySymbol } from '../utils/programUtils';
 import { useSubPrograms } from '../hooks/useSubPrograms';
