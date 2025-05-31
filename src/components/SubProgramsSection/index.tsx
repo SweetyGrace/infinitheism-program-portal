@@ -1,27 +1,9 @@
+
 import { useRef } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import SubProgramCard from '../SubProgramCard';
-
-interface SubProgram {
-  id: string;
-  title: string;
-  banner?: File | null;
-  description: string;
-  startDate?: Date | null;
-  endDate?: Date | null;
-  modeOfProgram: 'online' | 'offline' | 'hybrid';
-  venueAddress: string[];
-  customVenue: string;
-  isTravelRequired?: 'yes' | 'no';
-  isResidential?: 'yes' | 'no';
-  isPaymentRequired: 'yes' | 'no';
-  currency: string;
-  programFee: string;
-  isHighlighted?: boolean;
-  highlightPhase?: 'fade-in' | 'visible' | 'fade-out';
-  showCustomVenue?: boolean;
-}
+import { SubProgram, CurrencyOption } from '../../types/program';
 
 interface SubProgramsSectionProps {
   subPrograms: SubProgram[];
@@ -32,7 +14,7 @@ interface SubProgramsSectionProps {
   modeOfProgram: 'online' | 'offline' | 'hybrid';
   startDate?: Date;
   endDate?: Date;
-  currencyOptions: Array<{ value: string; label: string; symbol: string }>;
+  currencyOptions: CurrencyOption[];
   venueOptions: string[];
   onAddSubProgram: () => void;
   onSubProgramChange: (subProgramId: string, field: keyof SubProgram, value: any) => void;
@@ -45,21 +27,14 @@ interface SubProgramsSectionProps {
 
 const SubProgramsSection = ({
   subPrograms,
-  uploadedBanner,
-  programDescription,
-  selectedCurrency,
-  isPaymentRequired,
-  modeOfProgram,
-  startDate,
-  endDate,
-  currencyOptions,
-  venueOptions,
   onAddSubProgram,
   onSubProgramChange,
   onSubProgramVenueChange,
   onSubProgramBannerUpload,
   onDeleteSubProgram,
   getCurrencySymbol,
+  currencyOptions,
+  venueOptions,
   isDateWithinProgramRange
 }: SubProgramsSectionProps) => {
   const subProgramRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
